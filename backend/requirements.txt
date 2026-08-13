@@ -1,0 +1,7 @@
+discord.py
+fastapi
+uvicorn
+pymongo
+python-dotenv
+sarvamai
+python-multipart
