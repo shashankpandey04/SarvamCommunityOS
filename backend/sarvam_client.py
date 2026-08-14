@@ -366,7 +366,7 @@ class SarvamService:
         }
 
         prompt = """
-            You are the query analysis system for CommunityOS,
+            You are the query analysis system for SarvamAI,
             an AI assistant for a developer community.
 
             Your job is ONLY to classify the user's question
@@ -378,7 +378,7 @@ class SarvamService:
 
             {
                 "intent": "technical_question | onboarding | feedback | program_question | general",
-                "topic": "authentication | sdk | saaras | bulbul | chat | doc-ai | translation | hackathon | communityos | community | general",
+                "topic": "authentication | sdk | saaras | bulbul | chat | doc-ai | translation | hackathon | sarvamai | community | general",
                 "keywords": ["keyword1", "keyword2"],
                 "needs_human": false
             }
@@ -388,11 +388,11 @@ class SarvamService:
             1. Select a specific topic ONLY when the user's question
             clearly relates to that topic.
 
-            2. NEVER select "communityos" simply because the question
-            is being asked to CommunityOS.
+            2. NEVER select "sarvamai" simply because the question
+            is being asked to SarvamAI.
 
-            3. "communityos" is ONLY for questions specifically about
-            the CommunityOS system, architecture, features,
+            3. "sarvamai" is ONLY for questions specifically about
+            the SarvamAI system, architecture, features,
             behavior, or implementation.
 
             4. "community" is for questions about the developer
@@ -462,13 +462,13 @@ class SarvamService:
             }
 
             Question:
-            "How does CommunityOS store knowledge?"
+            "How does SarvamAI store knowledge?"
 
             Output:
             {
                 "intent": "technical_question",
-                "topic": "communityos",
-                "keywords": ["CommunityOS", "knowledge", "storage"],
+                "topic": "sarvamai",
+                "keywords": ["SarvamAI", "knowledge", "storage"],
                 "needs_human": false
             }
             """
@@ -625,14 +625,14 @@ class SarvamService:
         context: str,
     ):
         """
-        Determine whether the retrieved CommunityOS
+        Determine whether the retrieved SarvamAI
         knowledge is sufficient to answer the question.
         """
 
         prompt = """
-            You are the knowledge sufficiency evaluator for CommunityOS.
+            You are the knowledge sufficiency evaluator for SarvamAI.
 
-            Determine whether the provided CommunityOS knowledge
+            Determine whether the provided SarvamAI knowledge
             contains enough information to answer the user's question
             accurately and directly.
 
@@ -728,14 +728,14 @@ class SarvamService:
         context: str,
     ):
         """
-        Generate a grounded answer using CommunityOS knowledge.
+        Generate a grounded answer using SarvamAI knowledge.
         """
 
         system_prompt = """
-    You are CommunityOS, an AI assistant for a developer community.
+    You are SarvamAI, an AI assistant for a developer community.
 
     Answer the developer's question using the provided
-    CommunityOS knowledge.
+    SarvamAI knowledge.
 
     Rules:
     - Use the provided knowledge as the source of truth.
