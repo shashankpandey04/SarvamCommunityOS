@@ -5,7 +5,7 @@ from discord.ext import commands
 
 import database
 from modules.impact_score import record_contribution
-from sarvam import SarvamService
+from sarvam_client import SarvamService
 
 
 class ContributorCog(commands.Cog):

@@ -8,7 +8,7 @@ from fastapi import (
     File,
 )
 
-from sarvam import SarvamService
+from sarvam_client import SarvamService
 from config import SARVAM_API_KEY
 
 

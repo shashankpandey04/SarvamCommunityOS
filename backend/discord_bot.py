@@ -1,6 +1,9 @@
 import asyncio
 
-import discord
+from utils.pagination import (
+    paginate_text,
+    AnswerPaginator,
+)
 import database
 
 from datetime import datetime, timezone
@@ -20,7 +23,7 @@ from knowledge import (
     search_knowledge,
     build_context,
 )
-from sarvam import SarvamService
+from sarvam_client import SarvamService
 
 
 class CommunityOS(commands.Cog):
@@ -252,9 +255,25 @@ class CommunityOS(commands.Cog):
             # Respond
             # ---------------------------------------------
 
-            await ctx.send(
-                answer
-            )
+            pages = paginate_text(answer)
+
+            if len(pages) == 1:
+
+                await ctx.send(
+                    pages[0]
+                )
+
+            else:
+
+                view = AnswerPaginator(
+                    pages=pages,
+                    user_id=ctx.author.id,
+                )
+
+                await ctx.send(
+                    pages[0],
+                    view=view,
+                )
 
             return
 
@@ -391,9 +410,25 @@ class CommunityOS(commands.Cog):
         # 8. Respond to User
         # =================================================
 
-        await ctx.send(
-            answer
-        )
+        pages = paginate_text(answer)
+
+        if len(pages) == 1:
+
+            await ctx.send(
+                pages[0]
+            )
+
+        else:
+
+            view = AnswerPaginator(
+                pages=pages,
+                user_id=ctx.author.id,
+            )
+
+            await ctx.send(
+                pages[0],
+                view=view,
+            )
 
     # =================================================
 

@@ -5,7 +5,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from config import SARVAM_API_KEY
-from sarvam import SarvamService
+from sarvam_client import SarvamService
 
 
 router = APIRouter(
