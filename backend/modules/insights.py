@@ -582,6 +582,9 @@ def refresh_insights(
 
     return generated
 
+def delete_existing_insights():
+    database.insights.delete_many({})
+
 # =========================================================
 # Get Current Insights
 # =========================================================

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from modules.insights import refresh_insights
+from modules.insights import refresh_insights, delete_existing_insights
 import database
 
 
@@ -154,6 +154,8 @@ async def community_signals():
     summary="Refresh community insights",
 )
 async def refresh_community_insights():
+
+    delete_existing_insights()
 
     insights = refresh_insights()
 
