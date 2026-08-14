@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import {
-  ArrowUpRight,
   FileQuestion,
   Lightbulb,
   TrendingUp,
@@ -27,28 +25,11 @@ function getInsightIcon(type: string) {
   }
 }
 
-function getActionLabel(type?: string) {
-  switch (type) {
-    case "create_knowledge":
-      return "Create Knowledge";
-
-    case "review_topic":
-      return "Review Topic";
-
-    default:
-      return "Take Action";
-  }
-}
-
 export default function InsightCard({
   insight,
 }: InsightCardProps) {
   const Icon = getInsightIcon(
     insight.type,
-  );
-
-  const actionLabel = getActionLabel(
-    insight.action?.type,
   );
 
   return (
@@ -85,6 +66,26 @@ export default function InsightCard({
           {insight.severity}
         </span>
       </div>
+
+      {/* Repeated Question */}
+      {insight.metric?.question && (
+        <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+          <div className="flex items-center gap-2">
+            <FileQuestion
+              size={14}
+              className="text-zinc-400"
+            />
+
+            <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">
+              Community Question
+            </span>
+          </div>
+
+          <p className="mt-2 text-sm font-medium leading-6 text-zinc-800">
+            {insight.metric.question}
+          </p>
+        </div>
+      )}
 
       {/* Suggestion */}
       {insight.suggestion && (
@@ -141,17 +142,16 @@ export default function InsightCard({
         </div>
       )}
 
-      {/* Action */}
-      {insight.action && (
+      {/* Recommendation */}
+      {insight.suggestion && (
         <div className="mt-5 border-t border-zinc-100 pt-4">
-          <Link
-            href={insight.action.target}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-900 transition hover:text-zinc-600"
-          >
-            {actionLabel}
+          <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">
+            Recommended Action
+          </p>
 
-            <ArrowUpRight size={14} />
-          </Link>
+          <p className="mt-1 text-xs leading-5 text-zinc-600">
+            {insight.suggestion}
+          </p>
         </div>
       )}
     </div>
