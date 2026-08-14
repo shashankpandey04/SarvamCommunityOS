@@ -122,6 +122,221 @@ class SarvamService:
 
         return await asyncio.to_thread(_call)
 
+    async def classify_message(
+        self,
+        message: str,
+    ):
+        """
+        Classify a Discord message as a meaningful contributor
+        action without answering the user.
+
+        Returns strict JSON with:
+        {
+            "type": "technical_question | helpful_answer | casual | feedback | other",
+            "meaningful": true
+        }
+        """
+
+        if not isinstance(message, str):
+            return {
+                "type": "casual",
+                "meaningful": False,
+            }
+
+        cleaned = message.strip()
+        if not cleaned:
+            return {
+                "type": "casual",
+                "meaningful": False,
+            }
+
+        prompt = """
+            You are the message classifier for CommunityOS.
+
+            Classify the provided Discord community message.
+            Do not answer the message.
+            Do not provide explanations.
+            Return ONLY valid JSON in this exact shape:
+
+            {
+                "type": "technical_question | helpful_answer | casual | feedback | other",
+                "meaningful": true
+            }
+
+            Rules:
+            - "technical_question" = genuine developer or community question seeking useful technical information.
+            - "helpful_answer" = a useful reply, explanation, or guidance that helps another contributor.
+            - "casual" = greetings, small talk, jokes, thanks, short social chatter, or trivial conversation.
+            - "feedback" = feature feedback, bug report, suggestion, or product experience feedback.
+            - "other" = anything else that is not clearly casual, technical, or feedback.
+            - "meaningful" is true only when the message has clear value for the community.
+            - Examples of casual messages: "anyone there?", "hey everyone", "good morning", "lol", "what's up?", "thanks", "okay", "cool", "bro", "hello?"
+            - Examples of technical questions: "How do I use Saaras v3?", "How can I generate a Sarvam API key?", "Why is my API request returning 401?", "Does Saaras support Hindi?", "How does CommunityOS store knowledge?", "What is the difference between REST and streaming TTS?"
+            - Return ONLY JSON.
+            - Do not include markdown.
+            """
+
+        try:
+            response = await self.chat(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": prompt,
+                    },
+                    {
+                        "role": "user",
+                        "content": message,
+                    },
+                ],
+                temperature=0,
+                max_tokens=200,
+            )
+
+            cleaned_response = response.strip()
+
+            if cleaned_response.startswith("```"):
+                cleaned_response = re.sub(
+                    r"```(?:json)?",
+                    "",
+                    cleaned_response,
+                ).strip()
+
+                if cleaned_response.endswith("```"):
+                    cleaned_response = cleaned_response[:-3].strip()
+
+            result = json.loads(cleaned_response)
+
+        except Exception:
+            return {
+                "type": "casual",
+                "meaningful": False,
+            }
+
+        message_type = result.get("type")
+        meaningful = bool(result.get("meaningful"))
+
+        if message_type not in {
+            "technical_question",
+            "helpful_answer",
+            "casual",
+            "feedback",
+            "other",
+        }:
+            message_type = "casual"
+
+        return {
+            "type": message_type,
+            "meaningful": meaningful,
+        }
+
+    @staticmethod
+    def _should_classify(message: str) -> bool:
+        """
+        Cheap local filter to avoid calling Sarvam for trivial
+        Discord chatter while still catching technical questions
+        and potentially useful replies.
+        """
+
+        if not isinstance(message, str):
+            return False
+
+        cleaned = re.sub(
+            r"<@!?(\d+)>|<@&(\d+)>|<#(\d+)>|https?://\S+",
+            " ",
+            message,
+            flags=re.IGNORECASE,
+        )
+        cleaned = " ".join(cleaned.split())
+
+        if not cleaned:
+            return False
+
+        lowered = cleaned.lower()
+
+        casual_phrases = {
+            "anyone there",
+            "hey everyone",
+            "good morning",
+            "good night",
+            "lol",
+            "haha",
+            "what's up",
+            "what is up",
+            "thanks",
+            "thank you",
+            "okay",
+            "cool",
+            "bro",
+            "hello",
+            "hi there",
+            "hey",
+            "yo",
+            "sup",
+            "good evening",
+        }
+
+        if lowered in casual_phrases or lowered.startswith(
+            tuple(
+                [
+                    "hey",
+                    "hi ",
+                    "hello",
+                    "thanks",
+                    "thank you",
+                    "lol",
+                    "haha",
+                    "okay",
+                    "cool",
+                    "bro",
+                    "yo",
+                    "sup",
+                ]
+            )
+        ):
+            return False
+
+        question_like = "?" in message
+        technical_indicators = (
+            "how ",
+            "why ",
+            "what ",
+            "when ",
+            "where ",
+            "which ",
+            "can ",
+            "does ",
+            "is ",
+            "are ",
+            "help",
+            "api",
+            "auth",
+            "token",
+            "sdk",
+            "saaras",
+            "bulbul",
+            "communityos",
+            "request",
+            "response",
+            "error",
+            "401",
+            "500",
+            "login",
+            "generate",
+            "how to",
+            "why is",
+            "how does",
+            "what is",
+            "can someone",
+            "does sarvam",
+        )
+
+        if question_like:
+            return len(cleaned.split()) >= 3 and not any(
+                phrase in lowered for phrase in casual_phrases
+            )
+
+        return any(indicator in lowered for indicator in technical_indicators)
+
     async def analyze_query(self, question: str):
         """
         Analyze a developer question and return structured

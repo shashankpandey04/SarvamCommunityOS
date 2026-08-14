@@ -28,6 +28,8 @@ class CommunityOSBot(commands.Bot):
         # Sync slash commands
         await self.tree.sync()
 
+        await self.load_extension("modules.contributor_cog")
+
         print("CommunityOS loaded.")
 
 

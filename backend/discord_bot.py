@@ -6,6 +6,8 @@ import database
 from datetime import datetime, timezone
 from discord.ext import commands
 
+from modules.impact_score import record_contribution
+
 import uvicorn
 
 from api import app
@@ -17,10 +19,6 @@ from config import (
 from knowledge import (
     search_knowledge,
     build_context,
-)
-
-from knowledge_candidates import (
-    add_candidate,
 )
 from sarvam import SarvamService
 
@@ -73,6 +71,8 @@ class CommunityOS(commands.Cog):
         server = uvicorn.Server(config)
 
         await server.serve()
+        
+
 
     # =================================================
     # Discord Commands
@@ -171,6 +171,16 @@ class CommunityOS(commands.Cog):
                 question=question,
                 context=context,
             )
+
+            # ---------------------------------------------
+            # Contributor Impact
+            # ---------------------------------------------
+
+            if intent == "technical_question":
+                record_contribution(
+                    discord_id=user_id,
+                    contribution_type="technical_question",
+                )
 
             # ---------------------------------------------
             # Save Message
@@ -273,6 +283,16 @@ class CommunityOS(commands.Cog):
             temperature=0.2,
             max_tokens=1000,
         )
+        # ---------------------------------------------
+        # Contributor Impact
+        # ---------------------------------------------
+
+        if intent == "technical_question":
+            record_contribution(
+                discord_id=user_id,
+                contribution_type="technical_question",
+            )
+
 
         # =================================================
         # 5. Save Knowledge Candidate

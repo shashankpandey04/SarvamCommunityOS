@@ -202,9 +202,46 @@ events.create_index(
 # Contributors
 # -------------------------
 
+# -------------------------
+# Contributors
+# -------------------------
+
+contributors.create_index(
+    [("discord_id", ASCENDING)],
+    unique=True,
+)
+
+contributors.create_index(
+    [("message_count", DESCENDING)]
+)
+
+contributors.create_index(
+    [("last_active", DESCENDING)]
+)
+
 contributors.create_index(
     [("impact_score", DESCENDING)]
 )
 
+
+# -------------------------
+# Events
+# -------------------------
+
+events.create_index(
+    [("created_at", DESCENDING)]
+)
+
+events.create_index(
+    [("user_id", ASCENDING), ("created_at", DESCENDING)]
+)
+
+events.create_index(
+    [("type", ASCENDING), ("created_at", DESCENDING)]
+)
+
+events.create_index(
+    [("channel", ASCENDING), ("created_at", DESCENDING)]
+)
 
 print("MongoDB collections and indexes ready.")
