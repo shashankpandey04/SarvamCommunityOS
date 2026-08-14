@@ -1,731 +1,626 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import {
+  Activity,
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  BookOpen,
+  CheckCircle2,
+  FileQuestion,
+  RefreshCw,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
-type AnalyticsOverview = {
-  total_questions: number;
-  resolved: number;
-  escalated: number;
-  knowledge_found: number;
-  sarvam_fallback: number;
-  resolution_rate: number;
-  knowledge_coverage_rate: number;
-  fallback_rate: number;
-};
+import {
+  getAnalyticsActivity,
+  getAnalyticsKnowledge,
+  getAnalyticsOverview,
+  getAnalyticsTopics,
+  getCommunitySignals,
+  refreshCommunitySignals,
+} from "@/lib/api";
 
-type ActivityItem = {
-  date: string;
-  messages: number;
-  questions: number;
-  resolved: number;
-  escalated: number;
-  fallback: number;
-};
+import type {
+  AnalyticsActivity,
+  AnalyticsKnowledge,
+  AnalyticsOverview,
+  AnalyticsTopic,
+  CommunitySignal,
+} from "@/types/api";
 
-type TopicItem = {
-  topic: string;
-  questions: number;
-  resolved: number;
-  escalated: number;
-  knowledge_found: number;
-  sarvam_fallback: number;
-  resolution_rate: number;
-};
-
-type KnowledgeAnalytics = {
-  period: {
-    days: number;
-    start: string;
-    end: string;
-  };
-
-  knowledge: {
-    total: number;
-    official: number;
-    generated: number;
-  };
-
-  candidates: {
-    total: number;
-    pending: number;
-    approved: number;
-    rejected: number;
-  };
-};
-
-type AnalyticsData = {
-  overview: AnalyticsOverview | null;
-  activity: ActivityItem[];
-  topics: TopicItem[];
-  knowledge: KnowledgeAnalytics | null;
-};
+import InsightCard from "@/components/dashboard/InsightCard";
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData>({
-    overview: null,
-    activity: [],
-    topics: [],
-    knowledge: null,
-  });
+  const [overview, setOverview] =
+    useState<AnalyticsOverview | null>(null);
 
-  const [days, setDays] = useState(30);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [activity, setActivity] =
+    useState<AnalyticsActivity[]>([]);
+
+  const [topics, setTopics] =
+    useState<AnalyticsTopic[]>([]);
+
+  const [knowledge, setKnowledge] =
+    useState<AnalyticsKnowledge | null>(null);
+
+  const [signals, setSignals] =
+    useState<CommunitySignal[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [refreshing, setRefreshing] =
+    useState(false);
+
+  const [error, setError] =
+    useState<string | null>(null);
 
   async function loadAnalytics() {
     try {
-      setLoading(true);
       setError(null);
 
       const [
-        overview,
-        activity,
-        topics,
-        knowledge,
+        overviewData,
+        activityData,
+        topicsData,
+        knowledgeData,
+        signalsData,
       ] = await Promise.all([
-        apiFetch<AnalyticsOverview>(
-          "/api/analytics/overview"
-        ),
-
-        apiFetch<ActivityItem[]>(
-          `/api/analytics/activity?days=${days}`
-        ),
-
-        apiFetch<TopicItem[]>(
-          "/api/analytics/topics"
-        ),
-
-        apiFetch<KnowledgeAnalytics>(
-          `/api/analytics/knowledge?days=${days}`
-        ),
+        getAnalyticsOverview(),
+        getAnalyticsActivity(30),
+        getAnalyticsTopics(),
+        getAnalyticsKnowledge(30),
+        getCommunitySignals(),
       ]);
 
-      setData({
-        overview,
-        activity,
-        topics,
-        knowledge,
-      });
-    } catch (error) {
-      console.error(
-        "Failed to load analytics:",
-        error
-      );
-
+      setOverview(overviewData);
+      setActivity(activityData);
+      setTopics(topicsData);
+      setKnowledge(knowledgeData);
+      setSignals(signalsData);
+    } catch (err) {
       setError(
-        "Unable to load analytics data."
+        err instanceof Error
+          ? err.message
+          : "Failed to load analytics.",
       );
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    loadAnalytics();
-  }, [days]);
+  async function handleRefreshSignals() {
+    try {
+      setRefreshing(true);
 
-  if (loading) {
-    return <AnalyticsSkeleton />;
+      const result =
+        await refreshCommunitySignals();
+
+      setSignals(result.insights);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to refresh insights.",
+      );
+    } finally {
+      setRefreshing(false);
+    }
   }
 
-  if (error) {
+  useEffect(() => {
+    loadAnalytics();
+  }, []);
+
+  if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="p-8">
+        <div className="animate-pulse">
+          <div className="h-8 w-40 rounded-lg bg-zinc-200" />
 
-        <PageHeader />
+          <div className="mt-2 h-4 w-72 rounded bg-zinc-100" />
 
-        <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-          <p className="text-sm text-red-700">
-            {error}
-          </p>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {Array.from({ length: 4 }).map(
+              (_, index) => (
+                <div
+                  key={index}
+                  className="h-32 rounded-2xl bg-zinc-100"
+                />
+              ),
+            )}
+          </div>
         </div>
-
-        <button
-          onClick={loadAnalytics}
-          className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-        >
-          Try again
-        </button>
-
       </div>
     );
   }
 
-  const overview = data.overview;
-  const knowledge = data.knowledge;
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+          <h2 className="font-semibold text-red-900">
+            Failed to load analytics
+          </h2>
+
+          <p className="mt-1 text-sm text-red-700">
+            {error}
+          </p>
+
+          <button
+            onClick={loadAnalytics}
+            className="mt-4 rounded-lg bg-red-900 px-4 py-2 text-sm font-medium text-white hover:bg-red-800"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-full bg-zinc-50 p-6 lg:p-8">
+      {/* ================================================= */}
+      {/* Header */}
+      {/* ================================================= */}
 
-      {/* =================================================
-          Header
-      ================================================= */}
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-950">
+            Analytics
+          </h1>
 
-      <PageHeader
-        days={days}
-        onDaysChange={setDays}
-        onRefresh={loadAnalytics}
-      />
+          <p className="mt-1 text-sm text-zinc-500">
+            Understand community activity, resolution,
+            knowledge coverage, and emerging needs.
+          </p>
+        </div>
 
-
-      {/* =================================================
-          Overview
-      ================================================= */}
-
-      {overview && (
-        <section>
-
-          <SectionTitle
-            title="Community Performance"
-            description="How effectively the community is getting answers."
+        <button
+          onClick={handleRefreshSignals}
+          disabled={refreshing}
+          className="inline-flex w-fit items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <RefreshCw
+            size={15}
+            className={
+              refreshing
+                ? "animate-spin"
+                : ""
+            }
           />
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {refreshing
+            ? "Refreshing..."
+            : "Refresh Insights"}
+        </button>
+      </div>
 
+      {/* ================================================= */}
+      {/* Overview Metrics */}
+      {/* ================================================= */}
+
+      {overview && (
+        <section className="mt-8">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
-              label="Questions"
+              title="Total Questions"
               value={overview.total_questions}
+              icon={FileQuestion}
             />
 
             <MetricCard
-              label="Resolved"
+              title="Resolved"
               value={overview.resolved}
-              suffix={`${overview.resolution_rate}% resolution`}
+              icon={CheckCircle2}
+              detail={`${overview.resolution_rate}% resolution rate`}
             />
 
             <MetricCard
-              label="Knowledge Found"
+              title="Knowledge Found"
               value={overview.knowledge_found}
-              suffix={`${overview.knowledge_coverage_rate}% coverage`}
+              icon={BookOpen}
+              detail={`${overview.knowledge_coverage_rate}% coverage`}
             />
 
             <MetricCard
-              label="Sarvam Fallback"
+              title="Sarvam Fallback"
               value={overview.sarvam_fallback}
-              suffix={`${overview.fallback_rate}% fallback`}
+              icon={ArrowUpRight}
+              detail={`${overview.fallback_rate}% fallback rate`}
             />
-
           </div>
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-
-            <MetricCard
-              label="Escalated"
-              value={overview.escalated}
-            />
-
-            <MetricCard
-              label="Unresolved"
-              value={
-                Math.max(
-                  overview.total_questions -
-                    overview.resolved,
-                  0
-                )
-              }
-            />
-
-          </div>
-
         </section>
       )}
 
+      {/* ================================================= */}
+      {/* Activity + Resolution */}
+      {/* ================================================= */}
 
-      {/* =================================================
-          Activity
-      ================================================= */}
+      <section className="mt-8 grid gap-5 xl:grid-cols-3">
+        {/* Activity */}
+        <div className="xl:col-span-2 rounded-2xl border border-zinc-200 bg-white p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-zinc-950">
+                Community Activity
+              </h2>
 
-      <section className="rounded-xl border border-zinc-200 bg-white">
+              <p className="mt-1 text-xs text-zinc-500">
+                Activity over the last 30 days
+              </p>
+            </div>
 
-        <SectionHeader
-          title="Activity Over Time"
-          description={`Community activity during the last ${days} days.`}
-        />
-
-        <div className="p-6">
-
-          {data.activity.length > 0 ? (
-            <ActivityChart
-              activity={data.activity}
+            <Activity
+              size={18}
+              className="text-zinc-400"
             />
-          ) : (
-            <EmptyState
-              message="No activity recorded for this period."
-            />
-          )}
+          </div>
 
+          <div className="mt-6 space-y-3">
+            {activity.length === 0 ? (
+              <EmptyState text="No activity recorded yet." />
+            ) : (
+              activity.map((item) => (
+                <ActivityRow
+                  key={item.date}
+                  activity={item}
+                />
+              ))
+            )}
+          </div>
         </div>
 
+        {/* Resolution */}
+        {overview && (
+          <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+            <h2 className="font-semibold text-zinc-950">
+              Resolution Health
+            </h2>
+
+            <p className="mt-1 text-xs text-zinc-500">
+              How effectively CommunityOS is answering
+              questions.
+            </p>
+
+            <div className="mt-6 space-y-5">
+              <ProgressMetric
+                label="Resolution Rate"
+                value={overview.resolution_rate}
+              />
+
+              <ProgressMetric
+                label="Knowledge Coverage"
+                value={
+                  overview.knowledge_coverage_rate
+                }
+              />
+
+              <ProgressMetric
+                label="Fallback Rate"
+                value={overview.fallback_rate}
+              />
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <MiniMetric
+                label="Escalated"
+                value={overview.escalated}
+              />
+
+              <MiniMetric
+                label="Fallback"
+                value={overview.sarvam_fallback}
+              />
+            </div>
+          </div>
+        )}
       </section>
 
+      {/* ================================================= */}
+      {/* Topic Analytics */}
+      {/* ================================================= */}
 
-      {/* =================================================
-          Topic Intelligence
-      ================================================= */}
+      <section className="mt-8 rounded-2xl border border-zinc-200 bg-white">
+        <div className="border-b border-zinc-100 p-5">
+          <div className="flex items-center gap-2">
+            <TrendingUp
+              size={18}
+              className="text-zinc-500"
+            />
 
-      <section className="rounded-xl border border-zinc-200 bg-white">
+            <h2 className="font-semibold text-zinc-950">
+              Topic Analytics
+            </h2>
+          </div>
 
-        <SectionHeader
-          title="Topic Intelligence"
-          description="Understand which topics are generating questions and where knowledge is helping."
-        />
+          <p className="mt-1 text-xs text-zinc-500">
+            Questions and resolution performance by
+            topic.
+          </p>
+        </div>
 
         <div className="overflow-x-auto">
-
           <table className="w-full text-left">
-
             <thead>
-              <tr className="border-b border-zinc-200 text-xs text-zinc-400">
-
-                <th className="px-6 py-4 font-medium">
+              <tr className="border-b border-zinc-100 text-xs text-zinc-500">
+                <th className="px-5 py-3 font-medium">
                   Topic
                 </th>
 
-                <th className="px-6 py-4 font-medium">
+                <th className="px-5 py-3 font-medium">
                   Questions
                 </th>
 
-                <th className="px-6 py-4 font-medium">
+                <th className="px-5 py-3 font-medium">
                   Resolved
                 </th>
 
-                <th className="px-6 py-4 font-medium">
+                <th className="px-5 py-3 font-medium">
                   Knowledge
                 </th>
 
-                <th className="px-6 py-4 font-medium">
+                <th className="px-5 py-3 font-medium">
                   Fallback
                 </th>
 
-                <th className="px-6 py-4 font-medium">
+                <th className="px-5 py-3 font-medium">
                   Resolution
                 </th>
-
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-zinc-100">
-
-              {data.topics.map((topic) => (
+            <tbody>
+              {topics.map((topic) => (
                 <TopicRow
                   key={topic.topic}
                   topic={topic}
                 />
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
       </section>
 
-
-      {/* =================================================
-          Knowledge Analytics
-      ================================================= */}
+      {/* ================================================= */}
+      {/* Knowledge Analytics */}
+      {/* ================================================= */}
 
       {knowledge && (
-        <section>
+        <section className="mt-8">
+          <div className="mb-4">
+            <h2 className="font-semibold text-zinc-950">
+              Knowledge Base
+            </h2>
 
-          <SectionTitle
-            title="Knowledge Base"
-            description="Knowledge coverage and candidate pipeline for the selected period."
-          />
+            <p className="mt-1 text-xs text-zinc-500">
+              Knowledge growth and candidate review
+              pipeline.
+            </p>
+          </div>
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
-            <MetricCard
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <KnowledgeMetric
               label="Total Knowledge"
-              value={
-                knowledge.knowledge.total
-              }
+              value={knowledge.knowledge.total}
+              icon={BookOpen}
             />
 
-            <MetricCard
+            <KnowledgeMetric
               label="Official"
-              value={
-                knowledge.knowledge.official
-              }
+              value={knowledge.knowledge.official}
             />
 
-            <MetricCard
+            <KnowledgeMetric
               label="Generated"
-              value={
-                knowledge.knowledge.generated
-              }
-
+              value={knowledge.knowledge.generated}
             />
 
+            <KnowledgeMetric
+              label="Pending Candidates"
+              value={knowledge.candidates.pending}
+              icon={AlertTriangle}
+            />
+
+            <KnowledgeMetric
+              label="Approved Candidates"
+              value={knowledge.candidates.approved}
+              icon={CheckCircle2}
+            />
           </div>
-
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-            <MetricCard
-              label="Candidates"
-              value={
-                knowledge.candidates.total
-              }
-            />
-
-            <MetricCard
-              label="Pending"
-              value={
-                knowledge.candidates.pending
-              }
-            />
-
-            <MetricCard
-              label="Approved"
-              value={
-                knowledge.candidates.approved
-              }
-            />
-
-            <MetricCard
-              label="Rejected"
-              value={
-                knowledge.candidates.rejected
-              }
-            />
-
-          </div>
-
         </section>
       )}
 
+      {/* ================================================= */}
+      {/* Community Signals */}
+      {/* ================================================= */}
+
+      <section className="mt-8">
+        <div className="mb-4 flex items-end justify-between">
+          <div>
+            <h2 className="font-semibold text-zinc-950">
+              Community Insights
+            </h2>
+
+            <p className="mt-1 text-xs text-zinc-500">
+              Signals detected from community activity.
+            </p>
+          </div>
+
+          <span className="text-xs text-zinc-400">
+            {signals.length} signals
+          </span>
+        </div>
+
+        {signals.length === 0 ? (
+          <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center">
+            <LightbulbPlaceholder />
+
+            <p className="mt-3 text-sm text-zinc-500">
+              No community signals detected.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {signals.map((signal, index) => (
+              <InsightCard
+                key={`${signal.type}-${signal.created_at}-${index}`}
+                insight={signal}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
 
 
-/* =========================================================
-   Header
-========================================================= */
-
-function PageHeader({
-  days,
-  onDaysChange,
-  onRefresh,
-}: {
-  days?: number;
-  onDaysChange?: (days: number) => void;
-  onRefresh?: () => void;
-}) {
-  return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-
-      <div>
-
-        <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
-          Intelligence
-        </p>
-
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-950">
-          Analytics
-        </h1>
-
-        <p className="mt-1 text-sm text-zinc-500">
-          Understand community activity,
-          resolution, knowledge coverage,
-          and support patterns.
-        </p>
-
-      </div>
-
-      <div className="flex items-center gap-2">
-
-        <select
-          value={days}
-          onChange={(event) =>
-            onDaysChange?.(
-              Number(event.target.value)
-            )
-          }
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 outline-none focus:border-zinc-400"
-        >
-          <option value={7}>
-            Last 7 days
-          </option>
-
-          <option value={30}>
-            Last 30 days
-          </option>
-
-          <option value={90}>
-            Last 90 days
-          </option>
-        </select>
-
-        <button
-          onClick={onRefresh}
-          className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-        >
-          Refresh
-        </button>
-
-      </div>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   Section Title
-========================================================= */
-
-function SectionTitle({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div>
-
-      <h2 className="text-sm font-semibold text-zinc-950">
-        {title}
-      </h2>
-
-      <p className="mt-1 text-xs text-zinc-500">
-        {description}
-      </p>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   Section Header
-========================================================= */
-
-function SectionHeader({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="border-b border-zinc-200 px-6 py-5">
-
-      <h2 className="text-sm font-semibold text-zinc-950">
-        {title}
-      </h2>
-
-      <p className="mt-1 text-xs text-zinc-500">
-        {description}
-      </p>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   Metric Card
-========================================================= */
+// ============================================================
+// Metric Card
+// ============================================================
 
 function MetricCard({
-  label,
+  title,
   value,
-  suffix,
+  icon: Icon,
+  detail,
 }: {
-  label: string;
-  value: string | number;
-  suffix?: string;
+  title: string;
+  value: number;
+  icon: typeof Activity;
+  detail?: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5">
+    <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-zinc-500">
+          {title}
+        </span>
 
-      <p className="text-sm font-medium text-zinc-500">
-        {label}
-      </p>
+        <Icon
+          size={17}
+          className="text-zinc-400"
+        />
+      </div>
 
-      <p className="mt-3 text-2xl font-semibold tracking-tight text-zinc-950">
+      <div className="mt-3 text-2xl font-semibold tracking-tight text-zinc-950">
         {value}
-      </p>
+      </div>
 
-      {suffix && (
-        <p className="mt-2 text-xs text-zinc-400">
-          {suffix}
+      {detail && (
+        <p className="mt-1 text-xs text-zinc-400">
+          {detail}
         </p>
       )}
-
     </div>
   );
 }
 
 
-/* =========================================================
-   Activity Chart
-========================================================= */
+// ============================================================
+// Activity Row
+// ============================================================
 
-function ActivityChart({
+function ActivityRow({
   activity,
 }: {
-  activity: ActivityItem[];
+  activity: AnalyticsActivity;
 }) {
-  const maxValue = Math.max(
-    ...activity.map((item) =>
-      Math.max(
-        item.messages,
-        item.questions,
-        item.resolved,
-        item.fallback
-      )
-    ),
-    1
-  );
+  const total =
+    activity.questions +
+    activity.messages;
+
+  const questionPercentage =
+    total > 0
+      ? (activity.questions / total) * 100
+      : 0;
 
   return (
-    <div>
+    <div className="rounded-xl bg-zinc-50 p-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-zinc-700">
+          {formatDate(activity.date)}
+        </span>
 
-      <div className="flex h-64 items-end gap-1 border-b border-zinc-200">
-
-        {activity.map((item) => {
-
-          const height =
-            (item.messages / maxValue) * 100;
-
-          return (
-            <div
-              key={item.date}
-              className="group relative flex h-full flex-1 items-end"
-              title={`${item.date}: ${item.messages} messages`}
-            >
-
-              <div
-                className="w-full rounded-t bg-zinc-900 transition-opacity group-hover:opacity-70"
-                style={{
-                  height: `${Math.max(
-                    height,
-                    1
-                  )}%`,
-                }}
-              />
-
-            </div>
-          );
-        })}
-
+        <span className="text-xs text-zinc-400">
+          {activity.messages} messages
+        </span>
       </div>
 
-      <div className="mt-3 flex justify-between text-[10px] text-zinc-400">
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200">
+        <div
+          className="h-full rounded-full bg-zinc-800"
+          style={{
+            width: `${Math.min(
+              questionPercentage,
+              100,
+            )}%`,
+          }}
+        />
+      </div>
 
+      <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-zinc-500">
         <span>
-          {activity[0]?.date}
+          {activity.questions} questions
         </span>
 
         <span>
-          {activity[activity.length - 1]?.date}
+          {activity.resolved} resolved
         </span>
 
+        <span>
+          {activity.fallback} fallback
+        </span>
+
+        <span>
+          {activity.escalated} escalated
+        </span>
       </div>
-
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-5">
-
-        <ActivityLegend
-          label="Messages"
-          value={sum(activity, "messages")}
-        />
-
-        <ActivityLegend
-          label="Questions"
-          value={sum(activity, "questions")}
-        />
-
-        <ActivityLegend
-          label="Resolved"
-          value={sum(activity, "resolved")}
-        />
-
-        <ActivityLegend
-          label="Escalated"
-          value={sum(activity, "escalated")}
-        />
-
-        <ActivityLegend
-          label="Fallback"
-          value={sum(activity, "fallback")}
-        />
-
-      </div>
-
     </div>
   );
 }
 
 
-/* =========================================================
-   Activity Legend
-========================================================= */
-
-function ActivityLegend({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) {
-  return (
-    <div className="rounded-lg bg-zinc-50 p-3">
-
-      <p className="text-[11px] text-zinc-400">
-        {label}
-      </p>
-
-      <p className="mt-1 text-sm font-semibold text-zinc-900">
-        {value}
-      </p>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   Topic Row
-========================================================= */
+// ============================================================
+// Topic Row
+// ============================================================
 
 function TopicRow({
   topic,
 }: {
-  topic: TopicItem;
+  topic: AnalyticsTopic;
 }) {
   return (
-    <tr className="text-sm">
-
-      <td className="px-6 py-4 font-medium text-zinc-900">
-        {topic.topic}
+    <tr className="border-b border-zinc-100 last:border-0">
+      <td className="px-5 py-4">
+        <span className="rounded-lg bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
+          #{topic.topic}
+        </span>
       </td>
 
-      <td className="px-6 py-4 text-zinc-600">
+      <td className="px-5 py-4 text-sm text-zinc-700">
         {topic.questions}
       </td>
 
-      <td className="px-6 py-4 text-zinc-600">
+      <td className="px-5 py-4 text-sm text-zinc-700">
         {topic.resolved}
       </td>
 
-      <td className="px-6 py-4 text-zinc-600">
+      <td className="px-5 py-4 text-sm text-zinc-700">
         {topic.knowledge_found}
       </td>
 
-      <td className="px-6 py-4 text-zinc-600">
+      <td className="px-5 py-4 text-sm text-zinc-700">
         {topic.sarvam_fallback}
       </td>
 
-      <td className="px-6 py-4">
-
+      <td className="px-5 py-4">
         <span
-          className={`font-medium ${
+          className={`text-sm font-medium ${
             topic.resolution_rate >= 80
               ? "text-emerald-600"
               : topic.resolution_rate >= 50
@@ -735,93 +630,149 @@ function TopicRow({
         >
           {topic.resolution_rate}%
         </span>
-
       </td>
-
     </tr>
   );
 }
 
 
-/* =========================================================
-   Empty State
-========================================================= */
+// ============================================================
+// Progress Metric
+// ============================================================
 
-function EmptyState({
-  message,
+function ProgressMetric({
+  label,
+  value,
 }: {
-  message: string;
+  label: string;
+  value: number;
 }) {
   return (
-    <div className="py-12 text-center">
+    <div>
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-zinc-500">
+          {label}
+        </span>
 
-      <p className="text-sm text-zinc-500">
-        {message}
+        <span className="font-medium text-zinc-900">
+          {value}%
+        </span>
+      </div>
+
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-100">
+        <div
+          className="h-full rounded-full bg-zinc-900 transition-all"
+          style={{
+            width: `${Math.min(
+              Math.max(value, 0),
+              100,
+            )}%`,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+
+// ============================================================
+// Mini Metric
+// ============================================================
+
+function MiniMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="rounded-xl border border-zinc-200 p-3">
+      <p className="text-[11px] text-zinc-400">
+        {label}
       </p>
 
+      <p className="mt-1 text-lg font-semibold text-zinc-950">
+        {value}
+      </p>
     </div>
   );
 }
 
 
-/* =========================================================
-   Helpers
-========================================================= */
+// ============================================================
+// Knowledge Metric
+// ============================================================
 
-function sum(
-  items: ActivityItem[],
-  key: keyof ActivityItem
-) {
-  return items.reduce(
-    (total, item) =>
-      total +
-      (typeof item[key] === "number"
-        ? item[key]
-        : 0),
-    0
-  );
-}
-
-
-/* =========================================================
-   Loading
-========================================================= */
-
-function AnalyticsSkeleton() {
+function KnowledgeMetric({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: number;
+  icon?: typeof BookOpen;
+}) {
   return (
-    <div className="space-y-8">
+    <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium text-zinc-500">
+          {label}
+        </p>
 
-      <div className="space-y-2">
-        <div className="h-7 w-48 animate-pulse rounded bg-zinc-200" />
-        <div className="h-4 w-96 animate-pulse rounded bg-zinc-200" />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-        {[1, 2, 3, 4].map((item) => (
-          <div
-            key={item}
-            className="h-32 animate-pulse rounded-xl border border-zinc-200 bg-white"
+        {Icon && (
+          <Icon
+            size={16}
+            className="text-zinc-400"
           />
-        ))}
-
+        )}
       </div>
 
-      <div className="h-80 animate-pulse rounded-xl border border-zinc-200 bg-white" />
-
-      <div className="h-72 animate-pulse rounded-xl border border-zinc-200 bg-white" />
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
-        {[1, 2, 3].map((item) => (
-          <div
-            key={item}
-            className="h-28 animate-pulse rounded-xl border border-zinc-200 bg-white"
-          />
-        ))}
-
-      </div>
-
+      <p className="mt-3 text-2xl font-semibold tracking-tight text-zinc-950">
+        {value}
+      </p>
     </div>
   );
+}
+
+
+// ============================================================
+// Empty State
+// ============================================================
+
+function EmptyState({
+  text,
+}: {
+  text: string;
+}) {
+  return (
+    <div className="rounded-xl border border-dashed border-zinc-200 p-6 text-center">
+      <p className="text-sm text-zinc-400">
+        {text}
+      </p>
+    </div>
+  );
+}
+
+
+function LightbulbPlaceholder() {
+  return (
+    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100">
+      <TrendingUp
+        size={18}
+        className="text-zinc-400"
+      />
+    </div>
+  );
+}
+
+
+function formatDate(date: string) {
+  return new Date(
+    `${date}T00:00:00`,
+  ).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

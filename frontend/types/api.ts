@@ -33,12 +33,16 @@ export interface InsightMetric {
 
   occurrences?: number;
   question?: string;
+
+  [key: string]: unknown;
 }
+
 
 export interface InsightAction {
   type: string;
   target: string;
 }
+
 
 export interface CommunityInsight {
   type: string;
@@ -46,19 +50,63 @@ export interface CommunityInsight {
   severity:
     | "low"
     | "medium"
-    | "high";
+    | "high"
+    | "critical";
 
   title: string;
 
   message: string;
 
-  suggestion: string;
+  suggestion?: string;
 
   topic?: string;
 
-  metric: InsightMetric;
+  metric?: InsightMetric;
 
-  action: InsightAction;
+  action?: InsightAction;
+
+  created_at: string;
+
+  updated_at: string;
+}
+
+
+// ============================================================
+// Community Signal
+// ============================================================
+
+export interface CommunitySignal {
+  type: string;
+
+  severity:
+    | "low"
+    | "medium"
+    | "high"
+    | "critical";
+
+  title: string;
+
+  message: string;
+
+  suggestion?: string;
+
+  topic?: string;
+
+  metric?: {
+    current_questions?: number;
+    previous_questions?: number;
+    growth_percent?: number;
+
+    occurrences?: number;
+    question?: string;
+
+    [key: string]: unknown;
+  };
+
+  action?: {
+    type: string;
+    target: string;
+  };
 
   created_at: string;
 
@@ -84,6 +132,7 @@ export interface HealthResponse {
   service: string;
 }
 
+
 // ============================================================
 // Analytics
 // ============================================================
@@ -94,13 +143,16 @@ export interface AnalyticsOverview {
   escalated: number;
   knowledge_found: number;
   sarvam_fallback: number;
+
   resolution_rate: number;
   knowledge_coverage_rate: number;
   fallback_rate: number;
 }
 
+
 export interface AnalyticsActivity {
   date: string;
+
   messages: number;
   questions: number;
   resolved: number;
@@ -108,15 +160,23 @@ export interface AnalyticsActivity {
   fallback: number;
 }
 
+
 export interface AnalyticsTopic {
   topic: string;
+
   questions: number;
   resolved: number;
   escalated: number;
   knowledge_found: number;
   sarvam_fallback: number;
+
   resolution_rate: number;
 }
+
+
+// ============================================================
+// Analytics Period
+// ============================================================
 
 export interface AnalyticsPeriod {
   days: number | null;
@@ -124,7 +184,12 @@ export interface AnalyticsPeriod {
   end: string;
 }
 
-export interface AnalyticsKnowledge {
+
+// ============================================================
+// Knowledge Analytics
+// ============================================================
+
+export interface KnowledgeAnalytics {
   period: AnalyticsPeriod;
 
   knowledge: {
@@ -141,55 +206,76 @@ export interface AnalyticsKnowledge {
   };
 }
 
+
+// ============================================================
+// Trending Topic
+// ============================================================
+
 export interface TrendingTopic {
   topic: string;
   mentions: number;
 }
 
-export interface CommunitySignal {
-  type: string;
-  severity: "low" | "medium" | "high" | "critical";
-  title: string;
-  message: string;
-  suggestion?: string;
 
-  topic?: string;
-
-  metric?: {
-    current_questions?: number;
-    previous_questions?: number;
-    growth_percent?: number;
-
-    occurrences?: number;
-    question?: string;
-
-    [key: string]: unknown;
-  };
-
-  action?: {
-    type: string;
-    target: string;
-  };
-
-  created_at: string;
-  updated_at: string;
-}
+// ============================================================
+// Documents
+// ============================================================
 
 export interface Document {
   _id: string;
+
   filename: string;
-  status: "processing" | "completed" | "failed";
+
+  status:
+    | "processing"
+    | "completed"
+    | "failed";
+
   source: string;
+
   knowledge_count?: number;
+
   error?: string;
+
   created_at: string;
+
   updated_at: string;
 }
 
+
+// ============================================================
+// Document Upload
+// ============================================================
+
 export interface DocumentUploadResponse {
   status: "completed";
+
   document_id: string;
+
   filename: string;
+
   sections: number;
+
   knowledge_ids: string[];
+}
+
+export interface AnalyticsKnowledge {
+  period: {
+    days: number | null;
+    start: string | null;
+    end: string;
+  };
+
+  knowledge: {
+    total: number;
+    official: number;
+    generated: number;
+  };
+
+  candidates: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
 }

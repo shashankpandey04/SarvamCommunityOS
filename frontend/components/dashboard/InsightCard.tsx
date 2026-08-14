@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
-  BookOpen,
   FileQuestion,
   Lightbulb,
   TrendingUp,
@@ -28,7 +27,7 @@ function getInsightIcon(type: string) {
   }
 }
 
-function getActionLabel(type: string) {
+function getActionLabel(type?: string) {
   switch (type) {
     case "create_knowledge":
       return "Create Knowledge";
@@ -54,21 +53,24 @@ export default function InsightCard({
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-zinc-300 hover:shadow-sm">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
+        <div className="flex min-w-0 items-start gap-3">
           <div
             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-              insight.severity === "high"
+              insight.severity === "critical"
                 ? "bg-red-50 text-red-600"
-                : insight.severity === "medium"
-                  ? "bg-amber-50 text-amber-600"
-                  : "bg-zinc-100 text-zinc-600"
+                : insight.severity === "high"
+                  ? "bg-orange-50 text-orange-600"
+                  : insight.severity === "medium"
+                    ? "bg-amber-50 text-amber-600"
+                    : "bg-zinc-100 text-zinc-600"
             }`}
           >
             <Icon size={19} />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h3 className="text-sm font-semibold text-zinc-950">
               {insight.title}
             </h3>
@@ -79,39 +81,55 @@ export default function InsightCard({
           </div>
         </div>
 
-        <span className="rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-500">
+        <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-500">
           {insight.severity}
         </span>
       </div>
 
-      <div className="mt-4 rounded-xl bg-zinc-50 p-3">
-        <div className="flex gap-2">
-          <Lightbulb
-            size={15}
-            className="mt-0.5 shrink-0 text-zinc-500"
-          />
+      {/* Suggestion */}
+      {insight.suggestion && (
+        <div className="mt-4 rounded-xl bg-zinc-50 p-3">
+          <div className="flex gap-2">
+            <Lightbulb
+              size={15}
+              className="mt-0.5 shrink-0 text-zinc-500"
+            />
 
-          <p className="text-xs leading-5 text-zinc-600">
-            {insight.suggestion}
-          </p>
+            <p className="text-xs leading-5 text-zinc-600">
+              {insight.suggestion}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
-      {insight.metric && (
+      {/* Metrics */}
+      {(insight.metric || insight.topic) && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {insight.metric.current_questions !==
+          {insight.metric?.current_questions !==
             undefined && (
             <span className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs text-zinc-500">
-              {insight.metric.current_questions}{" "}
-              questions
+              {insight.metric.current_questions} questions
             </span>
           )}
 
-          {insight.metric.occurrences !==
+          {insight.metric?.previous_questions !==
             undefined && (
             <span className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs text-zinc-500">
-              {insight.metric.occurrences}{" "}
-              occurrences
+              {insight.metric.previous_questions} previous
+            </span>
+          )}
+
+          {insight.metric?.growth_percent !==
+            undefined && (
+            <span className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs text-zinc-500">
+              {insight.metric.growth_percent}% growth
+            </span>
+          )}
+
+          {insight.metric?.occurrences !==
+            undefined && (
+            <span className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs text-zinc-500">
+              {insight.metric.occurrences} occurrences
             </span>
           )}
 
@@ -123,16 +141,19 @@ export default function InsightCard({
         </div>
       )}
 
-      <div className="mt-5 border-t border-zinc-100 pt-4">
-        <Link
-          href={insight.action?.target || "#"}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-900 hover:text-zinc-600"
-        >
-          {actionLabel}
+      {/* Action */}
+      {insight.action && (
+        <div className="mt-5 border-t border-zinc-100 pt-4">
+          <Link
+            href={insight.action.target}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-900 transition hover:text-zinc-600"
+          >
+            {actionLabel}
 
-          <ArrowUpRight size={14} />
-        </Link>
-      </div>
+            <ArrowUpRight size={14} />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
