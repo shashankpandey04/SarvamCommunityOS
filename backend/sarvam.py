@@ -68,30 +68,6 @@ class SarvamService:
         return await asyncio.to_thread(_call)
 
     # --------------------------------------------------
-    # Text to Speech
-    # --------------------------------------------------
-
-    async def speak(
-        self,
-        text: str,
-        language: str = "hi-IN",
-        speaker: str = "shubh",
-    ):
-        """
-        Bulbul v3 text-to-speech.
-        """
-
-        def _call():
-            return self.client.text_to_speech.convert(
-                model="bulbul:v3",
-                text=text,
-                target_language_code=language,
-                speaker=speaker,
-            )
-
-        return await asyncio.to_thread(_call)
-
-    # --------------------------------------------------
     # Document Intelligence
     # --------------------------------------------------
 
@@ -624,3 +600,18 @@ class SarvamService:
         return await asyncio.to_thread(
             _call
         )
+
+    async def text_to_speech(
+        self,
+        text: str,
+        target_language_code: str = "en-IN",
+        speaker: str = "shubh",
+    ):
+        response = await self.client.text_to_speech.convert(
+            text=text,
+            target_language_code=target_language_code,
+            speaker=speaker,
+            model="bulbul:v3",
+        )
+
+        return response

@@ -2,12 +2,21 @@ from datetime import datetime, timedelta, timezone
 
 from bson import ObjectId
 from fastapi import FastAPI, HTTPException
-
 import database
 
 app = FastAPI(
     title="Sarvam CommunityOS API",
     version="0.1.0",
+)
+
+from routes.tts import router as tts_router
+from routes.stt import router as stt_router
+
+app.include_router(
+    tts_router
+)
+app.include_router(
+    stt_router
 )
 
 def get_date_range(
