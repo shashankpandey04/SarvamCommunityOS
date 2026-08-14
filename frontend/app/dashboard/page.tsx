@@ -84,10 +84,6 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
 
-      {/* =========================================
-          Heading
-      ========================================= */}
-
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-950">
           Community Overview
@@ -98,11 +94,6 @@ export default function DashboardPage() {
           community.
         </p>
       </div>
-
-
-      {/* =========================================
-          Core Metrics
-      ========================================= */}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 
@@ -132,14 +123,7 @@ export default function DashboardPage() {
 
       </div>
 
-
-      {/* =========================================
-          Community Health + Attention
-      ========================================= */}
-
       <div className="grid gap-6 lg:grid-cols-2">
-
-        {/* Community Health */}
 
         <section className="rounded-xl border border-zinc-200 bg-white">
 
@@ -180,9 +164,6 @@ export default function DashboardPage() {
           </div>
 
         </section>
-
-
-        {/* Attention */}
 
         <section className="rounded-xl border border-zinc-200 bg-white">
 
@@ -247,11 +228,6 @@ export default function DashboardPage() {
 
       </div>
 
-
-      {/* =========================================
-          Quick Community Snapshot
-      ========================================= */}
-
       <section className="rounded-xl border border-zinc-200 bg-white">
 
         <div className="border-b border-zinc-200 px-6 py-5">
@@ -267,8 +243,6 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-0 md:grid-cols-2">
-
-          {/* Top Topic */}
 
           <div className="border-b border-zinc-100 p-6 md:border-b-0 md:border-r">
 
@@ -296,9 +270,6 @@ export default function DashboardPage() {
 
           </div>
 
-
-          {/* Escalations */}
-
           <div className="p-6">
 
             <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
@@ -318,11 +289,6 @@ export default function DashboardPage() {
         </div>
 
       </section>
-
-
-      {/* =========================================
-          Signals Preview
-      ========================================= */}
 
       {signals.length > 0 && (
         <section className="rounded-xl border border-zinc-200 bg-white">
@@ -366,11 +332,6 @@ export default function DashboardPage() {
   );
 }
 
-
-/* =================================================
-   Metric Card
-================================================= */
-
 function MetricCard({
   label,
   value,
@@ -399,11 +360,6 @@ function MetricCard({
   );
 }
 
-
-/* =================================================
-   Health Stat
-================================================= */
-
 function HealthStat({
   label,
   value,
@@ -426,11 +382,6 @@ function HealthStat({
   );
 }
 
-
-/* =================================================
-   Severity
-================================================= */
-
 function SeverityBadge({
   severity,
 }: {
@@ -442,11 +393,6 @@ function SeverityBadge({
     </span>
   );
 }
-
-
-/* =================================================
-   Signal Preview
-================================================= */
 
 function SignalPreview({
   signal,
@@ -485,11 +431,6 @@ function SignalPreview({
     </div>
   );
 }
-
-
-/* =================================================
-   Loading Skeleton
-================================================= */
 
 function OverviewSkeleton() {
   return (

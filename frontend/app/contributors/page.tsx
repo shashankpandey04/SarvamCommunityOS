@@ -87,10 +87,6 @@ export default function ContributorsPage() {
   return (
     <div className="space-y-8">
 
-      {/* =================================================
-          Header
-      ================================================= */}
-
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 
         <div>
@@ -119,11 +115,6 @@ export default function ContributorsPage() {
 
       </div>
 
-
-      {/* =================================================
-          Error
-      ================================================= */}
-
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-5">
 
@@ -133,11 +124,6 @@ export default function ContributorsPage() {
 
         </div>
       )}
-
-
-      {/* =================================================
-          Leaderboard
-      ================================================= */}
 
       <section className="rounded-xl border border-zinc-200 bg-white">
 
@@ -185,11 +171,6 @@ export default function ContributorsPage() {
 
       </section>
 
-
-      {/* =================================================
-          Contributor Detail
-      ================================================= */}
-
       {(selected || detailLoading) && (
         <ContributorDetail
           contributor={selected}
@@ -201,11 +182,6 @@ export default function ContributorsPage() {
     </div>
   );
 }
-
-
-/* =========================================================
-   Contributor Row
-========================================================= */
 
 function ContributorRow({
   contributor,
@@ -222,14 +198,9 @@ function ContributorRow({
       className="flex w-full items-center gap-4 px-6 py-5 text-left transition hover:bg-zinc-50"
     >
 
-      {/* Rank */}
-
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-sm font-semibold text-zinc-600">
         {rank}
       </div>
-
-
-      {/* User */}
 
       <div className="min-w-0 flex-1">
 
@@ -243,9 +214,6 @@ function ContributorRow({
 
       </div>
 
-
-      {/* Messages */}
-
       <div className="hidden text-right sm:block">
 
         <p className="text-xs text-zinc-400">
@@ -258,9 +226,6 @@ function ContributorRow({
 
       </div>
 
-
-      {/* Channels */}
-
       <div className="hidden text-right md:block">
 
         <p className="text-xs text-zinc-400">
@@ -272,9 +237,6 @@ function ContributorRow({
         </p>
 
       </div>
-
-
-      {/* Impact */}
 
       <div className="w-20 text-right">
 
@@ -291,11 +253,6 @@ function ContributorRow({
     </button>
   );
 }
-
-
-/* =========================================================
-   Contributor Detail
-========================================================= */
 
 function ContributorDetail({
   contributor,
@@ -347,8 +304,6 @@ function ContributorDetail({
       ) : contributor ? (
         <div className="p-6 space-y-6">
 
-          {/* Identity */}
-
           <div>
 
             <h3 className="text-lg font-semibold text-zinc-950">
@@ -360,9 +315,6 @@ function ContributorDetail({
             </p>
 
           </div>
-
-
-          {/* Stats */}
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
@@ -390,9 +342,6 @@ function ContributorDetail({
 
           </div>
 
-
-          {/* Channels */}
-
           <div>
 
             <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
@@ -415,9 +364,6 @@ function ContributorDetail({
             </div>
 
           </div>
-
-
-          {/* Timeline */}
 
           <div className="grid gap-4 border-t border-zinc-100 pt-5 sm:grid-cols-2">
 
@@ -444,11 +390,6 @@ function ContributorDetail({
   );
 }
 
-
-/* =========================================================
-   Detail Card
-========================================================= */
-
 function DetailCard({
   label,
   value,
@@ -470,11 +411,6 @@ function DetailCard({
     </div>
   );
 }
-
-
-/* =========================================================
-   Info Item
-========================================================= */
 
 function InfoItem({
   label,
@@ -498,11 +434,6 @@ function InfoItem({
   );
 }
 
-
-/* =========================================================
-   Formatting
-========================================================= */
-
 function formatDate(
   value: string
 ) {
@@ -514,11 +445,6 @@ function formatDate(
     }
   );
 }
-
-
-/* =========================================================
-   Loading
-========================================================= */
 
 function ContributorsSkeleton() {
   return (

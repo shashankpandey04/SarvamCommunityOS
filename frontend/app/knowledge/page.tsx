@@ -76,11 +76,7 @@ export default function KnowledgePage() {
 
   const [mergePrimaryId, setMergePrimaryId] =
     useState<string>("");
-
-  // =========================================================
-  // Load Candidates
-  // =========================================================
-
+    
   async function loadCandidates() {
     try {
       setLoadingCandidates(true);
@@ -99,10 +95,6 @@ export default function KnowledgePage() {
       setLoadingCandidates(false);
     }
   }
-
-  // =========================================================
-  // Load Knowledge
-  // =========================================================
 
   async function loadKnowledge(
     requestedPage = page,
@@ -141,10 +133,6 @@ export default function KnowledgePage() {
     }
   }
 
-  // =========================================================
-  // Initial Load
-  // =========================================================
-
   useEffect(() => {
     loadCandidates();
   }, []);
@@ -152,10 +140,6 @@ export default function KnowledgePage() {
   useEffect(() => {
     loadKnowledge(page, search);
   }, [page, search]);
-
-  // =========================================================
-  // Search
-  // =========================================================
 
   function handleSearch(
     event: React.FormEvent,
@@ -173,10 +157,6 @@ export default function KnowledgePage() {
     setPage(1);
     setSelectedKnowledge([]);
   }
-
-  // =========================================================
-  // Candidate Approval
-  // =========================================================
 
   async function approveCandidate(
     candidate: Candidate,
@@ -213,10 +193,6 @@ export default function KnowledgePage() {
     }
   }
 
-  // =========================================================
-  // Candidate Rejection
-  // =========================================================
-
   async function rejectCandidate(
     candidate: Candidate,
   ) {
@@ -250,10 +226,6 @@ export default function KnowledgePage() {
       setSaving(false);
     }
   }
-
-  // =========================================================
-  // Update Knowledge
-  // =========================================================
 
   async function updateKnowledge() {
     if (!editingKnowledge) {
@@ -292,10 +264,6 @@ export default function KnowledgePage() {
       setSaving(false);
     }
   }
-
-  // =========================================================
-  // Selection
-  // =========================================================
 
   function toggleKnowledge(
     knowledgeId: string,
@@ -343,10 +311,6 @@ export default function KnowledgePage() {
     }
   }
 
-  // =========================================================
-  // Open Merge
-  // =========================================================
-
   function openMergeModal() {
     if (selectedKnowledge.length < 2) {
       return;
@@ -358,10 +322,6 @@ export default function KnowledgePage() {
 
     setShowMergeModal(true);
   }
-
-  // =========================================================
-  // Merge Knowledge
-  // =========================================================
 
   async function mergeKnowledge() {
     if (
@@ -408,10 +368,6 @@ export default function KnowledgePage() {
     }
   }
 
-  // =========================================================
-  // Helpers
-  // =========================================================
-
   function formatDate(
     value?: string,
   ) {
@@ -427,10 +383,6 @@ export default function KnowledgePage() {
   return (
     <main className="min-h-screen bg-zinc-50 text-zinc-950">
       <div className="mx-auto max-w-7xl px-6 py-8">
-
-        {/* ================================================= */}
-        {/* Header */}
-        {/* ================================================= */}
 
         <div className="mb-8 flex items-start justify-between gap-6">
 
@@ -464,10 +416,6 @@ export default function KnowledgePage() {
 
         </div>
 
-        {/* ================================================= */}
-        {/* Error */}
-        {/* ================================================= */}
-
         {error && (
           <div className="mb-6 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <span>{error}</span>
@@ -482,10 +430,6 @@ export default function KnowledgePage() {
             </button>
           </div>
         )}
-
-        {/* ================================================= */}
-        {/* Pending Review */}
-        {/* ================================================= */}
 
         <section className="mb-10">
 
@@ -606,10 +550,6 @@ export default function KnowledgePage() {
 
         </section>
 
-        {/* ================================================= */}
-        {/* Knowledge Base */}
-        {/* ================================================= */}
-
         <section>
 
           <div className="mb-5">
@@ -631,8 +571,6 @@ export default function KnowledgePage() {
               </span>
 
             </div>
-
-            {/* Search */}
 
             <form
               onSubmit={handleSearch}
@@ -670,10 +608,6 @@ export default function KnowledgePage() {
             </form>
 
           </div>
-
-          {/* ================================================= */}
-          {/* Selection Toolbar */}
-          {/* ================================================= */}
 
           {knowledge.length > 0 && (
             <div className="mb-4 flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3">
@@ -730,10 +664,6 @@ export default function KnowledgePage() {
             </div>
           )}
 
-          {/* ================================================= */}
-          {/* Knowledge List */}
-          {/* ================================================= */}
-
           {loadingKnowledge ? (
             <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500">
               Loading knowledge...
@@ -772,8 +702,6 @@ export default function KnowledgePage() {
 
                       <div className="flex items-start gap-4">
 
-                        {/* Checkbox */}
-
                         <input
                           type="checkbox"
                           checked={selected}
@@ -784,8 +712,6 @@ export default function KnowledgePage() {
                           }
                           className="mt-1 h-4 w-4 shrink-0 rounded border-zinc-300"
                         />
-
-                        {/* Content */}
 
                         <div className="min-w-0 flex-1">
 
@@ -879,10 +805,6 @@ export default function KnowledgePage() {
             </div>
           )}
 
-          {/* ================================================= */}
-          {/* Pagination */}
-          {/* ================================================= */}
-
           {totalPages > 1 && (
             <div className="mt-6 flex items-center justify-between">
 
@@ -929,10 +851,6 @@ export default function KnowledgePage() {
         </section>
 
       </div>
-
-      {/* ===================================================== */}
-      {/* Candidate Review Modal */}
-      {/* ===================================================== */}
 
       {editingCandidate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
@@ -1055,10 +973,6 @@ export default function KnowledgePage() {
 
         </div>
       )}
-
-      {/* ===================================================== */}
-      {/* Edit Existing Knowledge Modal */}
-      {/* ===================================================== */}
 
       {editingKnowledge && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
@@ -1274,10 +1188,6 @@ export default function KnowledgePage() {
 
         </div>
       )}
-
-      {/* ===================================================== */}
-      {/* Merge Knowledge Modal */}
-      {/* ===================================================== */}
 
       {showMergeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">

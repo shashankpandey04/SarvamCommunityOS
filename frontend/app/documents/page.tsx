@@ -47,11 +47,6 @@ export default function DocumentsPage() {
     null
   );
 
-
-  // =====================================================
-  // Load Documents
-  // =====================================================
-
   async function loadDocuments() {
 
     try {
@@ -72,21 +67,11 @@ export default function DocumentsPage() {
     }
   }
 
-
-  // =====================================================
-  // Initial Load
-  // =====================================================
-
   useEffect(() => {
 
     loadDocuments();
 
   }, []);
-
-
-  // =====================================================
-  // Upload
-  // =====================================================
 
   async function handleUpload(
     event: ChangeEvent<HTMLInputElement>,
@@ -147,10 +132,6 @@ export default function DocumentsPage() {
   return (
     <div className="space-y-8">
 
-      {/* ================================================= */}
-      {/* Header */}
-      {/* ================================================= */}
-
       <div className="flex items-start justify-between">
 
         <div>
@@ -195,11 +176,6 @@ export default function DocumentsPage() {
 
       </div>
 
-
-      {/* ================================================= */}
-      {/* Status */}
-      {/* ================================================= */}
-
       {error && (
 
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -220,11 +196,6 @@ export default function DocumentsPage() {
         </div>
 
       )}
-
-
-      {/* ================================================= */}
-      {/* Upload Explanation */}
-      {/* ================================================= */}
 
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
 
@@ -254,11 +225,6 @@ export default function DocumentsPage() {
         </div>
 
       </div>
-
-
-      {/* ================================================= */}
-      {/* Documents */}
-      {/* ================================================= */}
 
       <div>
 
@@ -351,11 +317,6 @@ export default function DocumentsPage() {
     </div>
   );
 }
-
-
-// =========================================================
-// Status Badge
-// =========================================================
 
 function StatusBadge({
   status,

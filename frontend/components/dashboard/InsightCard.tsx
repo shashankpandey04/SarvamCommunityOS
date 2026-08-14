@@ -34,7 +34,6 @@ export default function InsightCard({
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-zinc-300 hover:shadow-sm">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
           <div
@@ -67,7 +66,6 @@ export default function InsightCard({
         </span>
       </div>
 
-      {/* Repeated Question */}
       {insight.metric?.question && (
         <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
           <div className="flex items-center gap-2">
@@ -87,7 +85,6 @@ export default function InsightCard({
         </div>
       )}
 
-      {/* Suggestion */}
       {insight.suggestion && (
         <div className="mt-4 rounded-xl bg-zinc-50 p-3">
           <div className="flex gap-2">
@@ -103,7 +100,6 @@ export default function InsightCard({
         </div>
       )}
 
-      {/* Metrics */}
       {(insight.metric || insight.topic) && (
         <div className="mt-4 flex flex-wrap gap-2">
           {insight.metric?.current_questions !==
@@ -142,7 +138,6 @@ export default function InsightCard({
         </div>
       )}
 
-      {/* Recommendation */}
       {insight.suggestion && (
         <div className="mt-5 border-t border-zinc-100 pt-4">
           <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">

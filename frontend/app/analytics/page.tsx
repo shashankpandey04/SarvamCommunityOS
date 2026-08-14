@@ -163,10 +163,6 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-full bg-zinc-50 p-6 lg:p-8">
-      {/* ================================================= */}
-      {/* Header */}
-      {/* ================================================= */}
-
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-950">
@@ -198,10 +194,6 @@ export default function AnalyticsPage() {
             : "Refresh Insights"}
         </button>
       </div>
-
-      {/* ================================================= */}
-      {/* Overview Metrics */}
-      {/* ================================================= */}
 
       {overview && (
         <section className="mt-8">
@@ -235,10 +227,6 @@ export default function AnalyticsPage() {
           </div>
         </section>
       )}
-
-      {/* ================================================= */}
-      {/* Activity + Resolution */}
-      {/* ================================================= */}
 
       <section className="mt-8 grid gap-5 xl:grid-cols-3">
         {/* Activity */}
@@ -274,7 +262,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Resolution */}
         {overview && (
           <div className="rounded-2xl border border-zinc-200 bg-white p-5">
             <h2 className="font-semibold text-zinc-950">
@@ -319,10 +306,6 @@ export default function AnalyticsPage() {
           </div>
         )}
       </section>
-
-      {/* ================================================= */}
-      {/* Topic Analytics */}
-      {/* ================================================= */}
 
       <section className="mt-8 rounded-2xl border border-zinc-200 bg-white">
         <div className="border-b border-zinc-100 p-5">
@@ -385,10 +368,6 @@ export default function AnalyticsPage() {
         </div>
       </section>
 
-      {/* ================================================= */}
-      {/* Knowledge Analytics */}
-      {/* ================================================= */}
-
       {knowledge && (
         <section className="mt-8">
           <div className="mb-4">
@@ -434,10 +413,6 @@ export default function AnalyticsPage() {
         </section>
       )}
 
-      {/* ================================================= */}
-      {/* Community Signals */}
-      {/* ================================================= */}
-
       <section className="mt-8">
         <div className="mb-4 flex items-end justify-between">
           <div>
@@ -478,11 +453,6 @@ export default function AnalyticsPage() {
   );
 }
 
-
-// ============================================================
-// Metric Card
-// ============================================================
-
 function MetricCard({
   title,
   value,
@@ -519,11 +489,6 @@ function MetricCard({
     </div>
   );
 }
-
-
-// ============================================================
-// Activity Row
-// ============================================================
 
 function ActivityRow({
   activity,
@@ -584,11 +549,6 @@ function ActivityRow({
   );
 }
 
-
-// ============================================================
-// Topic Row
-// ============================================================
-
 function TopicRow({
   topic,
 }: {
@@ -635,11 +595,6 @@ function TopicRow({
   );
 }
 
-
-// ============================================================
-// Progress Metric
-// ============================================================
-
 function ProgressMetric({
   label,
   value,
@@ -674,11 +629,6 @@ function ProgressMetric({
   );
 }
 
-
-// ============================================================
-// Mini Metric
-// ============================================================
-
 function MiniMetric({
   label,
   value,
@@ -698,11 +648,6 @@ function MiniMetric({
     </div>
   );
 }
-
-
-// ============================================================
-// Knowledge Metric
-// ============================================================
 
 function KnowledgeMetric({
   label,
@@ -735,11 +680,6 @@ function KnowledgeMetric({
   );
 }
 
-
-// ============================================================
-// Empty State
-// ============================================================
-
 function EmptyState({
   text,
 }: {
@@ -765,7 +705,6 @@ function LightbulbPlaceholder() {
     </div>
   );
 }
-
 
 function formatDate(date: string) {
   return new Date(

@@ -8,9 +8,6 @@ import {
   Users,
   Brain,
   FileText,
-  ShieldAlert,
-  MessageSquare,
-  CalendarDays,
   Settings,
 } from "lucide-react";
 
@@ -47,7 +44,6 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-zinc-200 bg-white">
-      {/* Brand */}
 
       <div className="flex h-20 items-center border-b border-zinc-200 px-6">
         <Link
@@ -69,8 +65,6 @@ export default function Sidebar() {
           </div>
         </Link>
       </div>
-
-      {/* Navigation */}
 
       <nav className="flex-1 space-y-1 px-3 py-5">
         <div className="mb-3 px-3 text-[11px] font-medium uppercase tracking-wider text-zinc-400">
@@ -104,8 +98,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Bottom */}
 
       <div className="border-t border-zinc-200 p-3">
         <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-500 transition hover:bg-zinc-50 hover:text-zinc-900">
