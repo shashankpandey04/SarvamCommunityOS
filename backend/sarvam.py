@@ -152,29 +152,135 @@ class SarvamService:
         information for CommunityOS knowledge retrieval.
         """
 
+        allowed_intents = {
+            "technical_question",
+            "onboarding",
+            "feedback",
+            "program_question",
+            "general",
+        }
+
+        allowed_topics = {
+            "authentication",
+            "sdk",
+            "saaras",
+            "bulbul",
+            "chat",
+            "doc-ai",
+            "translation",
+            "hackathon",
+            "communityos",
+            "community",
+            "general",
+        }
+
         prompt = """
-    You are the query analysis system for CommunityOS,
-    an AI assistant for a developer community.
+            You are the query analysis system for CommunityOS,
+            an AI assistant for a developer community.
 
-    Analyze the developer's question and return ONLY valid JSON.
+            Your job is ONLY to classify the user's question
+            for knowledge retrieval.
 
-    The JSON must contain:
+            Return ONLY valid JSON.
 
-    {
-        "intent": "technical_question | onboarding | feedback | program_question | general",
-        "topic": "one of: authentication, sdk, saaras, bulbul, chat, doc-ai, translation, hackathon, communityos, community, general",
-        "keywords": ["keyword1", "keyword2"],
-        "needs_human": false
-    }
+            Required JSON format:
 
-    Rules:
+            {
+                "intent": "technical_question | onboarding | feedback | program_question | general",
+                "topic": "authentication | sdk | saaras | bulbul | chat | doc-ai | translation | hackathon | communityos | community | general",
+                "keywords": ["keyword1", "keyword2"],
+                "needs_human": false
+            }
 
-    - Choose the most relevant topic.
-    - Use short, useful keywords for knowledge retrieval.
-    - Do not answer the question.
-    - Do not include markdown.
-    - Return ONLY JSON.
-    """
+            IMPORTANT TOPIC RULES:
+
+            1. Select a specific topic ONLY when the user's question
+            clearly relates to that topic.
+
+            2. NEVER select "communityos" simply because the question
+            is being asked to CommunityOS.
+
+            3. "communityos" is ONLY for questions specifically about
+            the CommunityOS system, architecture, features,
+            behavior, or implementation.
+
+            4. "community" is for questions about the developer
+            community itself, such as community participation,
+            community activities, or community processes.
+
+            5. "program_question" is an INTENT, not a topic.
+            Do not use "program_question" merely because a question
+            is about a product, API, model, or pricing.
+
+            6. If the question does not clearly match any specific topic,
+            use:
+            
+            "topic": "general"
+
+            7. For technical questions about Sarvam products:
+            - API keys/authentication → authentication
+            - SDK/client usage → sdk
+            - Saaras/STT → saaras
+            - Bulbul/TTS → bulbul
+            - Chat/105B → chat
+            - Document Intelligence/Digitise/Extract → doc-ai
+            - Translation/Mayura → translation
+
+            8. Keywords must be short and useful for knowledge retrieval.
+            Prefer concrete technical terms from the question.
+
+            9. Do not answer the question.
+
+            10. Do not include markdown.
+
+            11. Return ONLY JSON.
+
+            Examples:
+
+            Question:
+            "Where do I generate my Sarvam API key?"
+
+            Output:
+            {
+                "intent": "technical_question",
+                "topic": "authentication",
+                "keywords": ["API key", "generate", "Sarvam"],
+                "needs_human": false
+            }
+
+            Question:
+            "What speech processing modes does Saaras v3 support?"
+
+            Output:
+            {
+                "intent": "technical_question",
+                "topic": "saaras",
+                "keywords": ["Saaras v3", "speech processing", "modes"],
+                "needs_human": false
+            }
+
+            Question:
+            "Does Sarvam offer a dedicated GPU pricing calculator for developers?"
+
+            Output:
+            {
+                "intent": "technical_question",
+                "topic": "general",
+                "keywords": ["GPU", "pricing", "calculator"],
+                "needs_human": false
+            }
+
+            Question:
+            "How does CommunityOS store knowledge?"
+
+            Output:
+            {
+                "intent": "technical_question",
+                "topic": "communityos",
+                "keywords": ["CommunityOS", "knowledge", "storage"],
+                "needs_human": false
+            }
+            """
 
         response = await self.chat(
             messages=[
@@ -197,8 +303,8 @@ class SarvamService:
 
         cleaned = response.strip()
 
-        # Handle accidental markdown fences
         if cleaned.startswith("```"):
+
             cleaned = re.sub(
                 r"```(?:json)?",
                 "",
@@ -213,10 +319,13 @@ class SarvamService:
         # ---------------------------------------------
 
         try:
-            result = json.loads(cleaned)
+
+            result = json.loads(
+                cleaned
+            )
 
         except json.JSONDecodeError:
-            # Try extracting the first JSON object
+
             match = re.search(
                 r"\{.*\}",
                 cleaned,
@@ -224,6 +333,7 @@ class SarvamService:
             )
 
             if not match:
+
                 raise ValueError(
                     "Sarvam returned invalid query analysis."
                 )
@@ -233,36 +343,193 @@ class SarvamService:
             )
 
         # ---------------------------------------------
-        # Basic validation
+        # Defaults
         # ---------------------------------------------
 
-        result.setdefault(
+        intent = result.get(
             "intent",
             "general",
         )
 
-        result.setdefault(
+        topic = result.get(
             "topic",
             "general",
         )
 
-        result.setdefault(
+        keywords = result.get(
             "keywords",
             [],
         )
 
-        result.setdefault(
+        needs_human = result.get(
             "needs_human",
             False,
         )
 
+        # ---------------------------------------------
+        # Validate intent
+        # ---------------------------------------------
+
+        if intent not in allowed_intents:
+
+            intent = "general"
+
+        # ---------------------------------------------
+        # Validate topic
+        # ---------------------------------------------
+
+        if topic not in allowed_topics:
+
+            topic = "general"
+
+        # ---------------------------------------------
+        # Validate keywords
+        # ---------------------------------------------
+
         if not isinstance(
-            result["keywords"],
+            keywords,
             list,
         ):
-            result["keywords"] = []
 
-        return result
+            keywords = []
+
+        keywords = [
+            str(keyword).strip()
+            for keyword in keywords
+            if str(keyword).strip()
+        ]
+
+        # Remove duplicates while preserving order
+        keywords = list(
+            dict.fromkeys(
+                keywords
+            )
+        )
+
+        # Limit retrieval keywords
+        keywords = keywords[:8]
+
+        # ---------------------------------------------
+        # Validate needs_human
+        # ---------------------------------------------
+
+        needs_human = bool(
+            needs_human
+        )
+
+        # ---------------------------------------------
+        # Final result
+        # ---------------------------------------------
+
+        return {
+            "intent": intent,
+            "topic": topic,
+            "keywords": keywords,
+            "needs_human": needs_human,
+        }
+
+    async def assess_knowledge(
+        self,
+        question: str,
+        context: str,
+    ):
+        """
+        Determine whether the retrieved CommunityOS
+        knowledge is sufficient to answer the question.
+        """
+
+        prompt = """
+            You are the knowledge sufficiency evaluator for CommunityOS.
+
+            Determine whether the provided CommunityOS knowledge
+            contains enough information to answer the user's question
+            accurately and directly.
+
+            Return ONLY valid JSON:
+
+            {
+                "sufficient": true,
+                "reason": "short explanation"
+            }
+
+            Rules:
+
+            - "sufficient" is true ONLY when the knowledge directly
+            contains enough information to answer the question.
+            - If the knowledge is related but does not answer the
+            specific question, return false.
+            - Do not use outside knowledge.
+            - Do not answer the user's question.
+            - Do not include markdown.
+            - Return ONLY JSON.
+
+            Community knowledge:
+
+            """ + context
+
+        response = await self.chat(
+            messages=[
+                {
+                    "role": "system",
+                    "content": prompt,
+                },
+                {
+                    "role": "user",
+                    "content": question,
+                },
+            ],
+            temperature=0,
+            max_tokens=200,
+        )
+
+        cleaned = response.strip()
+
+        # Handle accidental markdown fences
+        if cleaned.startswith("```"):
+            cleaned = re.sub(
+                r"```(?:json)?",
+                "",
+                cleaned,
+            ).strip()
+
+            if cleaned.endswith("```"):
+                cleaned = cleaned[:-3].strip()
+
+        try:
+            result = json.loads(cleaned)
+
+        except json.JSONDecodeError:
+
+            match = re.search(
+                r"\{.*\}",
+                cleaned,
+                re.DOTALL,
+            )
+
+            if not match:
+                raise ValueError(
+                    "Sarvam returned invalid knowledge assessment."
+                )
+
+            result = json.loads(
+                match.group(0)
+            )
+
+        sufficient = result.get(
+            "sufficient",
+            False,
+        )
+
+        if not isinstance(sufficient, bool):
+            sufficient = False
+
+        return {
+            "sufficient": sufficient,
+            "reason": result.get(
+                "reason",
+                "",
+            ),
+        }
 
     async def answer_question(
         self,
@@ -307,4 +574,53 @@ class SarvamService:
             ],
             temperature=0.2,
             max_tokens=1000,
+        )
+
+    async def digitise_document(
+        self,
+        file_path: str,
+        language: str = "en-IN",
+        output_format: str = "md",
+    ):
+        """
+        Digitise an entire document into structured text
+        using Sarvam Document Intelligence.
+        """
+
+        def _call():
+
+            job = self.client.document_intelligence.create_job(
+                language=language,
+                output_format=output_format,
+            )
+
+            job.upload_file(
+                file_path
+            )
+
+            job.start()
+
+            status = job.wait_until_complete()
+
+            if status.job_state.lower() not in {
+                "completed",
+                "partiallycompleted",
+            }:
+                raise RuntimeError(
+                    f"Document digitisation failed: "
+                    f"{status.job_state}"
+                )
+
+            output_path = (
+                f"{file_path}.digitised.zip"
+            )
+
+            job.download_output(
+                output_path
+            )
+
+            return output_path
+
+        return await asyncio.to_thread(
+            _call
         )
