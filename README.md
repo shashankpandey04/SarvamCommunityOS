@@ -2,1238 +2,798 @@
 
 > **Listen to your community. Understand what matters. Act on it.**
 
-Sarvam CommunityOS is an AI-powered **Community Operations Platform** designed for developer communities.
+Sarvam CommunityOS is an AI-powered **Community Operations Platform** built for developer communities.
 
-It combines a Discord community bot, an AI agent, multilingual voice interaction, document intelligence, community analytics, and a community-manager dashboard into a single system.
+It combines a Discord-based AI assistant, Sarvam AI capabilities, community knowledge, feedback collection, human escalation, and a web dashboard into one system.
 
-The goal is not to replace community managers.
-
-The goal is to give them an **intelligent operating layer** that can handle repetitive developer support, identify recurring problems, surface community feedback, recognise valuable contributors, and turn thousands of community interactions into actionable insights.
+The goal is not to replace community managers. It is to give them an intelligent operating layer that can handle repetitive support, preserve community knowledge, surface unresolved issues, and turn everyday conversations into actionable community intelligence.
 
 ---
 
-## 1. The Problem
+## What is CommunityOS?
 
-Developer communities generate enormous amounts of information every day:
-
-* Technical questions
-* Beginner onboarding requests
-* Product feedback
-* Bug reports
-* Feature requests
-* Event questions
-* Hackathon discussions
-* Workshop conversations
-* Voice discussions
-* Community suggestions
-* Repeated documentation questions
-* Helpful answers from experienced builders
-
-In a growing community, this information becomes difficult to manage manually.
-
-A community manager may know that developers are struggling, but answering questions such as:
-
-> "What are developers struggling with this week?"
-
-> "Which documentation topic is causing the most confusion?"
-
-> "Which questions are still unanswered?"
-
-> "Which developers are consistently helping others?"
-
-> "What feedback should be sent to the product team?"
-
-> "Which community programs are actually working?"
-
-requires manually going through large amounts of conversations.
-
-**CommunityOS turns this community activity into structured, actionable intelligence.**
-
----
-
-# 2. What is CommunityOS?
-
-CommunityOS acts as an **AI operating layer for developer communities**.
-
-It has two primary sides:
+CommunityOS has two sides:
 
 ### Developer-facing
 
-A Discord-based AI community assistant that can:
+A Discord assistant that can:
 
-* Answer developer questions
-* Help with onboarding
-* Understand technical issues
-* Handle multilingual and voice-based questions
-* Provide information from official community knowledge
-* Record feedback
-* Identify issues requiring human intervention
-* Route questions to the appropriate team
+- Answer technical and community questions
+- Search approved community knowledge
+- Generate grounded responses using Sarvam AI
+- Collect structured feedback
+- Detect questions that cannot be confidently answered
+- Create human-support escalations
+- Continue escalation conversations through Discord threads
 
 ### Community-manager-facing
 
 A web dashboard that can:
 
-* Monitor community health
-* Identify recurring questions
-* Detect documentation friction
-* Analyse feedback
-* Track unresolved issues
-* Surface product/community signals
-* Identify high-impact contributors
-* Monitor program engagement
-* Generate community reports
-* Recommend actions to the community team
+- Monitor community activity and analytics
+- Manage community knowledge and documents
+- Review feedback
+- Review and manage escalations
+- Reply to users directly through Discord escalation threads
+- Track contributors and community signals
+- Serve as the operational interface for the community team
 
 ---
 
-# 3. Core Concept
+## The Core Idea
 
 CommunityOS follows a simple loop:
 
 ```text
                     DEVELOPER COMMUNITY
                             │
-              ┌─────────────┼─────────────┐
-              │             │             │
-            Text          Voice        Documents
-              │             │             │
-              └─────────────┼─────────────┘
+                  ┌─────────┼─────────┐
+                  │         │         │
+                Discord   Voice   Documents
+                  │         │         │
+                  └─────────┼─────────┘
                             ▼
-                   ┌─────────────────┐
-                   │  COMMUNITY OS   │
-                   │      AGENT      │
-                   └────────┬────────┘
+                    ┌───────────────┐
+                    │ CommunityOS   │
+                    │     Agent     │
+                    └───────┬───────┘
                             │
-              ┌─────────────┼─────────────┐
-              │             │             │
-              ▼             ▼             ▼
-           Resolve        Route        Analyse
-           question       issue        community
-              │             │             │
-              ▼             ▼             ▼
-          Developer        Team        Community
-            helped       notified       insights
+                ┌───────────┼───────────┐
+                │           │           │
+                ▼           ▼           ▼
+             Answer      Escalate    Analyse
+                │           │           │
+                ▼           ▼           ▼
+            Developer     Team      Dashboard
+              helped    notified    insights
 ```
 
-CommunityOS doesn't simply answer messages.
+The system is designed around one question:
 
-It tries to understand:
-
-> **What is happening in the community, why it is happening, and what should happen next?**
+> **What is happening in the community, why is it happening, and what should happen next?**
 
 ---
 
-# 4. Why Sarvam AI?
+# Key Features
 
-Sarvam AI is an India-focused AI company building models, APIs, and AI infrastructure for Indian languages and real-world Indian use cases.
+## 1. AI-Powered Discord Support
 
-CommunityOS is designed specifically around Sarvam's capabilities because the platform provides multiple components required to create a genuinely multilingual community experience.
-
-We use four core Sarvam capabilities:
-
-| Sarvam Capability         | CommunityOS Role                                                  |
-| ------------------------- | ----------------------------------------------------------------- |
-| **Saaras v3**             | Speech-to-text and multilingual voice input                       |
-| **Sarvam 105B**           | Agent reasoning, classification, analysis and response generation |
-| **Bulbul v3**             | Natural text-to-speech responses                                  |
-| **Document Intelligence** | Understanding and extracting information from community documents |
-
-Instead of building four disconnected API demonstrations, CommunityOS **orchestrates these capabilities as tools of a single community agent**.
-
----
-
-# 5. The CommunityOS Agent
-
-The central component is the **CommunityOS Agent**.
-
-The agent receives community interactions and determines what needs to happen.
-
-It can:
-
-* Understand the user's intent
-* Search the community knowledge base
-* Answer questions
-* Classify technical issues
-* Record feedback
-* Escalate unresolved problems
-* Analyse community conversations
-* Identify recurring themes
-* Identify high-value contributors
-* Generate community insights
-* Produce reports for community managers
-
-The agent does not blindly call every Sarvam API.
-
-It selects the capabilities required for each task.
-
----
-
-# 6. Agent Tool System
-
-CommunityOS exposes capabilities to the agent as tools.
-
-### Knowledge Tools
+Developers can ask CommunityOS questions directly in Discord.
 
 ```text
-search_knowledge()
-get_document_context()
-```
-
-### Community Tools
-
-```text
-search_conversations()
-record_feedback()
-create_escalation()
-get_unanswered_questions()
-```
-
-### Intelligence Tools
-
-```text
-detect_trending_topics()
-analyse_community_health()
-identify_contributors()
-generate_community_report()
-```
-
-### Sarvam Tools
-
-```text
-transcribe_audio()
-extract_document()
-generate_response()
-speak_response()
-```
-
-The agent can combine multiple tools during a single interaction.
-
----
-
-# 7. Example: Developer Support
-
-A developer asks in Discord:
-
-> "How do I use Saaras v3?"
-
-CommunityOS:
-
-```text
-Discord message
-       ↓
-Agent
-       ↓
-Search knowledge
-       ↓
-Relevant documentation
-       ↓
-Sarvam 105B
-       ↓
-Grounded response
-       ↓
-Discord reply
-```
-
-The developer receives an answer without requiring a community manager to manually respond.
-
----
-
-# 8. Example: Multilingual Voice Support
-
-A developer sends a voice message:
-
-> "Mujhe Saaras API mein unauthorized error aa raha hai."
-
-CommunityOS:
-
-```text
-Voice
-  ↓
-Saaras v3
-  ↓
-Speech → Text
-  ↓
-CommunityOS Agent
-  ↓
+Developer
+   ↓
+Discord
+   ↓
+CommunityOS
+   ↓
 Knowledge Search
-  ↓
-Sarvam 105B
-  ↓
-Answer
-  ↓
-Bulbul v3
-  ↓
-Voice Response
+   ↓
+Sarvam AI
+   ↓
+Grounded Response
 ```
 
-The system can understand and respond to developers using supported Indian languages and code-mixed communication.
+If the available knowledge is sufficient, CommunityOS responds normally.
+
+If the knowledge is insufficient, the system can fall back to a generated response while clearly indicating that the answer may require verification.
 
 ---
 
-# 9. Example: Human Escalation
+## 2. Knowledge-Grounded Answers
 
-Not every question should be answered automatically.
+CommunityOS can use stored community knowledge when answering questions.
 
-Suppose a developer says:
+The knowledge layer is designed for content such as:
 
-> "I've regenerated my API key twice but authentication is still failing."
+- API documentation
+- FAQs
+- Tutorials
+- Event information
+- Community guidelines
+- Workshop material
+- Product information
+- Internal community documentation
 
-CommunityOS searches its knowledge and determines that it does not have enough information to confidently resolve the issue.
+This reduces the need for the model to rely only on general knowledge.
 
-Instead of hallucinating an answer:
+---
+
+## 3. Human Escalation
+
+CommunityOS does not pretend to know everything.
+
+When a question cannot be confidently resolved, it can create an escalation.
 
 ```text
-Confidence: LOW
-
+Developer Question
        ↓
-
+Knowledge Search
+       ↓
+Insufficient Knowledge
+       ↓
+Fallback / Warning
+       ↓
 Create Escalation
        ↓
-Technical Support
+Discord Thread
        ↓
-Community Manager / Engineer
+Community Team
 ```
 
-The Discord team receives a structured escalation:
+Each escalation stores information such as:
+
+- Question
+- User
+- Guild
+- Channel
+- Topic
+- Bot answer
+- Discord thread ID
+- Status
+- Conversation messages
+- Creation/update timestamps
+
+Supported statuses:
 
 ```text
-COMMUNITYOS ESCALATION
-
-Category:
-Technical Issue
-
-Topic:
-Authentication
-
-Priority:
-Medium
-
-Reason:
-Unable to resolve automatically
-
-Attempts:
-2
-
-Relevant Knowledge:
-Authentication / API Keys
+open
+in_progress
+resolved
+closed
 ```
 
-This keeps humans in the loop where human judgment is required.
+### Dashboard → Discord
+
+Community managers can reply from the dashboard.
+
+```text
+Dashboard
+    ↓
+FastAPI
+    ↓
+Discord Thread
+    ↓
+User receives response
+    ↓
+Message stored in escalation history
+```
+
+This creates a two-way support workflow instead of a dashboard that merely displays tickets.
 
 ---
 
-# 10. Community Intelligence
+## 4. Community Feedback
 
-This is the core feature that differentiates CommunityOS from a normal AI chatbot.
+Developers can submit feedback through the Discord bot.
 
-Every meaningful interaction can become a **community signal**.
+Feedback can be stored with structured information such as:
 
-For example, suppose multiple developers say:
+- User
+- Guild
+- Topic
+- Category
+- Feedback content
+- Timestamp
 
-> "I can't find where to generate an API key."
-
-> "Where do I get my API key?"
-
-> "Authentication docs are confusing."
-
-> "How do I authenticate?"
-
-CommunityOS identifies the common theme:
-
-```text
-🔴 COMMUNITY SIGNAL
-
-Topic:
-Authentication & API Keys
-
-Mentions:
-37
-
-Affected Segment:
-New Developers
-
-Trend:
-+42% this week
-
-Likely Cause:
-Onboarding / documentation discoverability
-
-Recommended Action:
-Create a 5-minute authentication quickstart.
-```
-
-Instead of giving the community team individual messages, CommunityOS gives them the **underlying problem**.
+The dashboard provides a dedicated interface for reviewing community feedback.
 
 ---
 
-# 11. Voice of the Community
+## 5. Community Analytics
 
-Community managers need to understand what developers are saying.
+CommunityOS exposes community data through the backend API and dashboard.
 
-CommunityOS can analyse:
+The system can be used to understand:
 
-* Discord conversations
-* Feedback submissions
-* Office-hour transcripts
-* Workshop discussions
-* Event feedback
-* Technical support conversations
+- Community activity
+- Questions
+- Feedback
+- Interactions
+- Contributor activity
+- Escalations
+- Recurring community problems
 
-It can identify:
-
-### Technical Issues
-
-```text
-SDK installation
-Authentication
-API errors
-Rate limits
-```
-
-### Documentation Issues
-
-```text
-Missing examples
-Unclear terminology
-Poor discoverability
-Outdated instructions
-```
-
-### Feature Requests
-
-```text
-Streaming
-SDK improvements
-New language support
-Developer tooling
-```
-
-### Community Issues
-
-```text
-Onboarding friction
-Event communication
-Program participation
-Unanswered questions
-```
-
-This transforms raw community conversation into structured feedback for Product, Engineering and DevRel teams.
+The goal is to move from individual messages to patterns and signals.
 
 ---
 
-# 12. Community Memory
+## 6. Contributor Intelligence
 
-CommunityOS maintains two forms of memory.
+CommunityOS can track meaningful contributor activity.
 
-## Structured Community Memory
+Useful signals can include:
 
-Stored in PostgreSQL:
+- Helpful answers
+- Community participation
+- Technical assistance
+- Feedback
+- Event participation
+- Other meaningful interactions
 
-```text
-Users
-Discord messages
-Channels
-Events
-Feedback
-Escalations
-Contributors
-Programs
-Community signals
-Agent runs
-```
-
-## Semantic Knowledge Memory
-
-Stored using PostgreSQL + pgvector:
-
-```text
-Documentation
-FAQs
-Tutorials
-Event information
-Hackathon guides
-Community guidelines
-Product information
-Relevant conversation context
-```
-
-This allows CommunityOS to perform semantic retrieval instead of relying only on keyword matching.
+The objective is to identify people who create value for the community, rather than simply ranking users by message count.
 
 ---
 
-# 13. Knowledge Ingestion
+## 7. Document & Knowledge Management
 
-Community managers can upload community knowledge such as:
+Community managers can manage documents and knowledge through the dashboard.
 
-```text
-Sarvam API Guide.pdf
-Hackathon Handbook.pdf
-Community Guidelines.pdf
-Event FAQ.pdf
-Saaras Quickstart.pdf
-Workshop Guide.pdf
-```
-
-The ingestion pipeline is:
+The intended workflow is:
 
 ```text
-PDF
- ↓
-Sarvam Document Intelligence
- ↓
-Structured information
- ↓
-Normalisation
- ↓
-Chunking
- ↓
-Embeddings
- ↓
-PostgreSQL + pgvector
+Document
+   ↓
+Document Intelligence
+   ↓
+Extracted Content
+   ↓
+Processing / Chunking
+   ↓
+Knowledge Store
+   ↓
+Available to CommunityOS
 ```
 
-The resulting knowledge becomes available to the CommunityOS Agent.
+This allows uploaded documentation to become part of the knowledge used by the assistant.
 
 ---
 
-# 14. Discord Integration
+## 8. Sarvam AI Integration
 
-Discord is the primary community-facing interface.
+CommunityOS is designed around Sarvam AI capabilities.
 
-CommunityOS can operate in channels such as:
+The project can integrate Sarvam capabilities for:
 
-```text
-#general
-#help
-#feedback
-#hackathons
-#events
-#showcase
-```
+| Capability | Purpose |
+|---|---|
+| Sarvam conversational models | Response generation, reasoning and classification |
+| Saaras | Speech-to-text and multilingual voice interaction |
+| Bulbul | Text-to-speech |
+| Document Intelligence | Document extraction and processing |
 
-The bot should not respond to every message.
-
-It should intelligently determine when intervention is useful.
-
-### Example
-
-Normal conversation:
-
-> "This workshop was awesome!"
-
-CommunityOS:
-
-```text
-No intervention required.
-```
-
-Technical question:
-
-> "How do I initialise the Sarvam SDK?"
-
-CommunityOS:
-
-```text
-Answer.
-```
-
-Unresolved technical issue:
-
-> "I'm getting a 401 even with a new API key."
-
-CommunityOS:
-
-```text
-Attempt resolution.
-If confidence is low → escalate.
-```
-
-Feedback:
-
-> "The streaming documentation needs a proper example."
-
-CommunityOS:
-
-```text
-Record feedback.
-Classify topic.
-Add community signal.
-```
+The important idea is orchestration: these capabilities are used as components of one community operations system rather than as isolated API demos.
 
 ---
 
-# 15. Discord Commands
-
-The initial bot can support commands such as:
+# Architecture
 
 ```text
-/ask
-```
-
-Ask CommunityOS a question.
-
-```text
-/feedback
-```
-
-Submit structured community feedback.
-
-```text
-/report
-```
-
-Report a technical/community issue.
-
-```text
-/events
-```
-
-Get information about upcoming programs.
-
-```text
-/community
-```
-
-Get relevant community information.
-
-Additional commands can be introduced as the system evolves.
-
----
-
-# 16. Office Hour Intelligence
-
-CommunityOS can process recordings from community events, office hours, workshops and meetups.
-
-Example:
-
-```text
-office-hour.mp3
-       ↓
-Saaras v3
-       ↓
-Transcript
-       ↓
-Sarvam 105B
-       ↓
-Community Signals
-```
-
-Result:
-
-```text
-OFFICE HOUR #27
-
-Questions:
-17
-
-Resolved:
-12
-
-Unresolved:
-5
-
-Technical Issues:
-4
-
-Feature Requests:
-3
-
-Documentation Issues:
-5
-
-Most discussed topic:
-Saaras streaming
-```
-
-This lets the community team understand what happened without manually reviewing the entire recording.
-
----
-
-# 17. Builder Recognition
-
-CommunityOS can identify high-impact community contributors.
-
-Instead of simply ranking users by message count, it looks for meaningful contribution signals:
-
-```text
-Helpful Answers
-Accepted Solutions
-Newcomer Assistance
-Technical Tutorials
-Workshop Participation
-Mentoring
-Hackathon Participation
-Community Content
-```
-
-Example:
-
-```text
-🏆 COMMUNITY CONTRIBUTOR
-
-Developer:
-@username
-
-Helpful Answers:
-24
-
-New Developers Helped:
-11
-
-Accepted Solutions:
-7
-
-Tutorials:
-2
-
-Workshops:
-3
-
-Impact Score:
-91 / 100
-```
-
-The community team can then use these insights for:
-
-* Community recognition
-* Ambassador programs
-* Speaker opportunities
-* Mentorship
-* Builder spotlights
-* Community rewards
-
----
-
-# 18. Community Manager Dashboard
-
-The web dashboard acts as the **CommunityOS command center**.
-
-## Overview
-
-```text
-COMMUNITY HEALTH
-
-Members              12,482
-Active This Week      4,821
-Questions             1,284
-AI Resolved             891
-Escalations             103
-Response Rate            94%
-```
-
-## Trending Topics
-
-```text
-Authentication        ↑ 42%
-Saaras Streaming      ↑ 28%
-Hackathon             ↑ 19%
-TTS                   ↑ 12%
-```
-
-## Needs Attention
-
-```text
-8 unanswered questions
-4 technical escalations
-2 recurring documentation issues
-```
-
-## Top Contributors
-
-```text
-@developer1
-@builder2
-@community3
-```
-
-## CommunityOS Recommendations
-
-```text
-"Create a Saaras authentication quickstart."
-
-"Run another streaming-focused office hour."
-
-"Update the SDK installation guide."
-```
-
----
-
-# 19. Community Health
-
-CommunityOS can track metrics such as:
-
-### Activity
-
-* Messages
-* Active members
-* Active channels
-* Questions
-
-### Support
-
-* Response time
-* Resolution rate
-* AI resolution rate
-* Escalation rate
-* Unanswered questions
-
-### Engagement
-
-* Event participation
-* Workshop attendance
-* Hackathon participation
-* Returning contributors
-
-### Community Quality
-
-* Feedback volume
-* Recurring issues
-* Contributor activity
-* Community sentiment/signals
-
-These metrics allow the community team to make decisions based on actual community behaviour.
-
----
-
-# 20. High-Level Architecture
-
-```text
-                         ┌──────────────────────┐
-                         │     DEVELOPER        │
-                         │      COMMUNITY       │
-                         └──────────┬───────────┘
-                                    │
-                         ┌──────────▼───────────┐
-                         │       DISCORD        │
-                         │        BOT           │
-                         └──────────┬───────────┘
+                         ┌─────────────────────┐
+                         │     Developer       │
+                         │      Community      │
+                         └──────────┬──────────┘
                                     │
                                     ▼
-                         ┌──────────────────────┐
-                         │   COMMUNITYOS API    │
-                         │       FastAPI        │
-                         └──────────┬───────────┘
+                         ┌─────────────────────┐
+                         │       Discord       │
+                         │         Bot         │
+                         └──────────┬──────────┘
                                     │
-                         ┌──────────▼───────────┐
-                         │   COMMUNITY AGENT    │
-                         │                      │
-                         │ Intent               │
-                         │ Context              │
-                         │ Planning              │
-                         │ Tool Selection        │
-                         └──────────┬───────────┘
-                                    │
-             ┌──────────────────────┼──────────────────────┐
-             │                      │                      │
-             ▼                      ▼                      ▼
-        ┌──────────┐          ┌──────────┐          ┌──────────┐
-        │ Saaras   │          │ 105B LLM │          │  Doc AI  │
-        │   STT    │          │ Reasoning│          │Extraction│
-        └──────────┘          └──────────┘          └──────────┘
-             │                      │                      │
-             └──────────────────────┼──────────────────────┘
-                                    ▼
-                              ┌──────────┐
-                              │ Bulbul   │
-                              │   TTS    │
-                              └──────────┘
-
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   COMMUNITY MEMORY   │
-                         │                      │
-                         │ PostgreSQL            │
-                         │ + pgvector            │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   ADMIN DASHBOARD    │
-                         │       Next.js        │
-                         └──────────────────────┘
+                    ┌───────────────┴───────────────┐
+                    │                               │
+                    ▼                               ▼
+             ┌─────────────┐                ┌─────────────┐
+             │    Cogs      │                │  Sarvam AI  │
+             │ ask          │                │   Client    │
+             │ feedback     │                └─────────────┘
+             │ escalation   │
+             │ api          │
+             └──────┬──────┘
+                    │
+                    ▼
+             ┌─────────────┐
+             │   MongoDB   │
+             │ Community   │
+             │   Memory    │
+             └──────┬──────┘
+                    │
+                    ▼
+             ┌─────────────┐
+             │   FastAPI   │
+             │     API     │
+             └──────┬──────┘
+                    │
+                    ▼
+             ┌─────────────┐
+             │   Next.js   │
+             │  Dashboard  │
+             └─────────────┘
 ```
 
 ---
 
-# 21. Technology Stack
+# Project Structure
 
-## Frontend
+```text
+SarvamCommunityOS/
+│
+├── backend/
+│   │
+│   ├── bot.py
+│   ├── api.py
+│   ├── database.py
+│   ├── config.py
+│   ├── sarvam_client.py
+│   │
+│   ├── cogs/
+│   │   ├── api_cog.py
+│   │   ├── ask.py
+│   │   ├── feedback.py
+│   │   └── escalation.py
+│   │
+│   ├── routes/
+│   │   ├── analytics.py
+│   │   ├── community.py
+│   │   ├── contributors.py
+│   │   ├── documents.py
+│   │   ├── events.py
+│   │   ├── feedback.py
+│   │   ├── interactions.py
+│   │   ├── knowledge.py
+│   │   ├── stt.py
+│   │   ├── support.py
+│   │   └── tts.py
+│   │
+│   └── modules/
+│       └── contributor_cog.py
+│
+├── frontend/
+│   ├── app/
+│   │   ├── dashboard/
+│   │   ├── analytics/
+│   │   ├── contributors/
+│   │   ├── knowledge/
+│   │   ├── documents/
+│   │   ├── feedback/
+│   │   └── escalations/
+│   │
+│   ├── components/
+│   └── lib/
+│
+└── README.md
+```
 
-* Next.js
-* React
-* Tailwind CSS
+---
+
+# Technology Stack
 
 ## Backend
 
-* Python
-* FastAPI
-* discord.py
+- Python
+- FastAPI
+- discord.py
+- Pydantic
+
+## Frontend
+
+- Next.js
+- React
+- Tailwind CSS
+- Lucide React
 
 ## Database
 
-* PostgreSQL
-* pgvector
-* Supabase
+- MongoDB
+- PyMongo
 
 ## AI
 
-### Sarvam AI
+- Sarvam AI
+- Sarvam conversational models
+- Saaras
+- Bulbul
+- Sarvam Document Intelligence
 
-* `sarvam-105b-conversations`
-* `saaras:v3`
-* `bulbul:v3`
-* Sarvam Document Intelligence
+## Communication
 
-## Infrastructure
-
-* Environment variables for secrets
-* Supabase for hosted PostgreSQL
-* Local development for the application
-* Optional cloud deployment for demonstration
+- Discord
 
 ---
 
-# 22. Security Principles
+# Discord Bot Architecture
 
-CommunityOS handles community conversations and potentially sensitive information, so the system should follow strict security practices.
-
-### API Keys
-
-Sarvam API keys remain server-side.
+The Discord bot uses Cogs so individual responsibilities remain isolated.
 
 ```text
-Browser ❌
-Discord Client ❌
-Git Repository ❌
-
-FastAPI Backend ✅
+CommunityOSBot
+│
+├── AskCog
+│   └── Question answering
+│
+├── FeedbackCog
+│   └── Feedback collection
+│
+├── EscalationCog
+│   └── Human escalation + Discord threads
+│
+├── APICog
+│   └── FastAPI integration
+│
+└── ContributorCog
+    └── Contributor-related functionality
 ```
 
-### Discord Permissions
+A shared `SarvamService` instance is initialized by the bot and exposed to the Cogs:
 
-The bot should request only the permissions required for its functionality.
-
-### Human Escalation
-
-The AI should never pretend certainty when it does not have enough information.
-
-### Knowledge Boundaries
-
-Responses should be grounded in approved community knowledge where applicable.
-
-### Data Minimisation
-
-Only information required for community operations should be stored.
-
----
-
-# 23. Example Agent Workflows
-
-## Workflow A — Technical Question
-
-```text
-Developer
- ↓
-Discord
- ↓
-CommunityOS
- ↓
-Knowledge Search
- ↓
-Sarvam 105B
- ↓
-Answer
+```python
+self.sarvam = SarvamService(
+    SARVAM_API_KEY
+)
 ```
 
+This prevents every Cog from creating its own Sarvam client.
+
 ---
 
-## Workflow B — Voice Question
+# FastAPI
+
+The backend exposes REST APIs for the dashboard.
+
+Examples:
 
 ```text
-Developer Voice
- ↓
-Saaras v3
- ↓
-Transcript
- ↓
-CommunityOS
- ↓
-Knowledge Search
- ↓
-Sarvam 105B
- ↓
-Bulbul v3
- ↓
-Voice Response
+GET    /health
+
+GET    /api/escalations/
+GET    /api/escalations/{id}
+
+PATCH  /api/escalations/{id}/status
+
+POST   /api/escalations/{id}/messages
+
+DELETE /api/escalations/{id}
+```
+
+Other API modules handle areas such as:
+
+```text
+Analytics
+Contributors
+Knowledge
+Documents
+Community
+Feedback
+Events
+Interactions
+STT
+TTS
 ```
 
 ---
 
-## Workflow C — Unresolved Issue
+# Escalation Data Flow
+
+A complete escalation looks like this:
 
 ```text
-Developer
- ↓
-CommunityOS
- ↓
-Knowledge Search
- ↓
-Low Confidence
- ↓
-Create Escalation
- ↓
-Technical Team
+1. Developer asks a question
+              ↓
+2. CommunityOS searches knowledge
+              ↓
+3. Knowledge is insufficient
+              ↓
+4. Bot provides a clearly marked fallback
+              ↓
+5. EscalationCog creates a Discord thread
+              ↓
+6. Escalation is stored in MongoDB
+              ↓
+7. Dashboard retrieves escalation
+              ↓
+8. Community manager replies
+              ↓
+9. FastAPI sends message to Discord thread
+              ↓
+10. Message is stored in MongoDB
+```
+
+This keeps the Discord conversation and dashboard conversation connected through the stored `thread_id`.
+
+---
+
+# Getting Started
+
+## Prerequisites
+
+Install:
+
+- Python 3.11+
+- Node.js 20+
+- MongoDB
+- A Discord application/bot
+- Sarvam AI API access
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
+
+cd SarvamCommunityOS
 ```
 
 ---
 
-## Workflow D — Community Feedback
+## 2. Backend Setup
 
-```text
-Developer Feedback
- ↓
-Sarvam 105B
- ↓
-Classify
- ↓
-Store Feedback
- ↓
-Aggregate Similar Feedback
- ↓
-Community Signal
- ↓
-Dashboard
+```bash
+cd backend
+
+python -m venv .venv
+```
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
-## Workflow E — Office Hour Analysis
+## 3. Environment Variables
 
-```text
-Audio Recording
- ↓
-Saaras v3
- ↓
-Transcript
- ↓
-Sarvam 105B
- ↓
-Questions / Issues / Requests
- ↓
-Community Memory
- ↓
-Dashboard
+Create a `.env` file in the backend:
+
+```env
+DISCORD_TOKEN=your_discord_bot_token
+SARVAM_API_KEY=your_sarvam_api_key
+
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DATABASE=communityos
+
+CORS_ORIGINS=http://localhost:3000
+```
+
+Never commit real API keys or bot tokens.
+
+---
+
+## 4. Start the Backend
+
+Start the Discord bot:
+
+```bash
+python bot.py
+```
+
+The bot loads the application Cogs and synchronizes slash commands.
+
+The FastAPI application can be started with:
+
+```bash
+uvicorn api:app --reload --port 8000
 ```
 
 ---
 
-## Workflow F — Document Ingestion
+## 5. Frontend Setup
+
+```bash
+cd frontend
+
+npm install
+```
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+Start the dashboard:
+
+```bash
+npm run dev
+```
+
+Open:
 
 ```text
-PDF
- ↓
-Sarvam Document Intelligence
- ↓
-Structured Information
- ↓
-Chunking
- ↓
-Embeddings
- ↓
-pgvector
- ↓
-Available to Agent
+http://localhost:3000
 ```
 
 ---
 
-# 24. What Makes CommunityOS Different?
+# Discord Bot Permissions
 
-CommunityOS is **not** intended to be:
+The bot requires the permissions necessary for its enabled functionality.
 
-* A generic ChatGPT clone
-* A simple Discord moderation bot
-* A PDF chatbot
-* A basic RAG application
-* An analytics dashboard
-* A customer-support chatbot
+For escalation threads in particular, make sure the bot can:
 
-Instead, it combines these capabilities into a single **community operations agent**.
+- View channels
+- Send messages
+- Read message history
+- Create public threads
+- Send messages in threads
 
-The key difference is the feedback loop:
-
-```text
-Developer interaction
-        ↓
-Immediate assistance
-        ↓
-Community signal
-        ↓
-Pattern detection
-        ↓
-Actionable recommendation
-        ↓
-Community team action
-        ↓
-Better developer experience
-```
-
-The system doesn't just **answer the community**.
-
-It **learns from the community's needs and helps the community team act on them.**
+The bot also requires the **Message Content Intent** for message-based functionality.
 
 ---
 
-# 25. MVP Scope
+# Security
 
-The first version will focus on the smallest useful version of CommunityOS.
+CommunityOS handles community conversations and API credentials, so secrets should remain server-side.
 
-### Phase 1 — Core Agent
+### Never expose:
 
-* Sarvam 105B integration
-* Agent tool system
-* Basic knowledge retrieval
-* Community message classification
+```text
+Discord Bot Token
+Sarvam API Key
+MongoDB credentials
+```
 
-### Phase 2 — Discord
+The browser should communicate with the backend rather than directly with Sarvam AI.
 
-* Discord bot
-* `/ask`
-* `/feedback`
-* `/report`
-* Automated technical-question handling
-* Human escalation
+```text
+Browser
+   │
+   ▼
+FastAPI
+   │
+   ├── Sarvam AI
+   ├── MongoDB
+   └── Discord
+```
 
-### Phase 3 — Knowledge
+Environment files should never be committed:
 
-* Document upload
-* Sarvam Document Intelligence
-* Knowledge ingestion
-* PostgreSQL + pgvector
-
-### Phase 4 — Voice
-
-* Saaras v3
-* Voice question processing
-* Bulbul v3 responses
-
-### Phase 5 — Community Intelligence
-
-* Trending topics
-* Recurring issues
-* Unanswered questions
-* Feedback analysis
-* Community recommendations
-
-### Phase 6 — Builder Recognition
-
-* Contribution signals
-* High-impact contributor detection
-* Recognition recommendations
-
-### Phase 7 — Dashboard
-
-* Community health
-* Community signals
-* Escalations
-* Contributor insights
-* Recommendations
-* Reports
+```text
+.env
+.env.local
+```
 
 ---
 
-# 26. Future Possibilities
+# Design Principles
 
-CommunityOS can eventually expand beyond Discord.
+## 1. Don't hallucinate when knowledge is insufficient
 
-Potential interfaces include:
+If CommunityOS does not have enough information to confidently answer a question, it should make that limitation clear and provide a path to human support.
 
-```text
-Discord
-Slack
-Web
-WhatsApp
-Voice
-Community Portal
-```
+## 2. Keep humans in the loop
 
-The important architectural principle is that these interfaces should all communicate with the **same CommunityOS Agent**.
+Escalation is a feature, not a failure.
 
-```text
-Discord ───────┐
-Web ───────────┤
-Slack ─────────┤
-Voice ─────────┤
-               ▼
-        CommunityOS Agent
-               │
-               ▼
-        Shared Community
-            Memory
-```
+The objective is to route difficult problems to the right people while keeping the conversation context intact.
 
-This allows the community team to maintain one source of truth regardless of where developers interact.
+## 3. Store useful community context
+
+Questions, feedback, escalations, interactions, and knowledge should become structured data that can later power community intelligence.
+
+## 4. Keep the system modular
+
+Discord functionality belongs in Cogs.
+
+API functionality belongs in routes.
+
+AI integration belongs in the Sarvam service.
+
+Dashboard functionality belongs in the frontend.
 
 ---
 
-# 27. Project Vision
+# Current Capabilities
+
+| Area | Status |
+|---|---|
+| Discord bot | ✅ |
+| Sarvam AI integration | ✅ |
+| Knowledge-based Q&A | ✅ |
+| Feedback collection | ✅ |
+| Feedback API | ✅ |
+| Escalation creation | ✅ |
+| Discord escalation threads | ✅ |
+| Escalation API | ✅ |
+| Dashboard escalation view | ✅ |
+| Dashboard → Discord replies | ✅ |
+| Escalation status management | ✅ |
+| Community analytics | ✅ |
+| Contributor functionality | ✅ |
+| Document management | ✅ |
+| STT/TTS API routes | ✅ |
+
+---
+
+# Roadmap
+
+## Near Term
+
+- Improve knowledge retrieval
+- Improve escalation classification
+- Add richer escalation filtering
+- Improve dashboard analytics
+- Add real-time dashboard updates
+- Improve document ingestion
+- Expand multilingual interaction
+
+## Future
+
+- Community trend detection
+- Recurring issue detection
+- Community health scoring
+- Automated community reports
+- Contributor impact scoring
+- Voice-based community support
+- Cross-platform community support
+- Recommendation engine for community managers
+
+---
+
+# Why CommunityOS?
+
+Community platforms already contain enormous amounts of valuable information.
+
+The problem is that most of it stays trapped inside conversations.
+
+CommunityOS turns:
+
+```text
+Messages
+   ↓
+Knowledge
+   ↓
+Support
+   ↓
+Feedback
+   ↓
+Escalations
+   ↓
+Community Signals
+   ↓
+Action
+```
+
+Instead of only answering developers, it helps the community team understand **what developers need, where they are struggling, and what should be improved next.**
+
+---
+
+# Vision
 
 The long-term vision of CommunityOS is to become an **AI-native operating layer for developer communities**.
 
-Instead of community teams manually monitoring thousands of conversations, CommunityOS continuously helps them answer:
-
-> **What are developers asking?**
-
-> **What are they struggling with?**
-
-> **What needs human attention?**
-
-> **What should we improve?**
-
-> **Who is contributing the most?**
-
-> **What should we do next?**
-
 The community manager remains the decision-maker.
 
-CommunityOS provides the **context, intelligence, and automation** needed to make those decisions at scale.
+CommunityOS provides the:
+
+**context + intelligence + automation**
+
+needed to operate a community at scale.
 
 ---
-
-# 28. The Core Idea
-
-```text
-              LISTEN
-                 │
-              Saaras
-                 │
-                 ▼
-             UNDERSTAND
-                 │
-       Doc Intelligence + 105B
-                 │
-                 ▼
-               ACT
-                 │
-      Answer / Route / Escalate
-                 │
-                 ▼
-               LEARN
-                 │
-       Community Intelligence
-                 │
-                 ▼
-               GROW
-                 │
-       Better programs + support
-                 │
-                 └───────────────┐
-                                 │
-                                 ▼
-                        Better Community
-```
 
 ## Sarvam CommunityOS
 
