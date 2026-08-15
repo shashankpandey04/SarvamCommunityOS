@@ -8,6 +8,8 @@ app = FastAPI(
     version="0.1.0",
 )
 
+app.state.discord_bot = None
+
 allowed_origins = os.getenv(
     "CORS_ORIGINS",
     "http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000",
@@ -28,10 +30,10 @@ from routes.contributors import router as contributors_router
 from routes.knowledge import router as knowledge_router
 from routes.documents import router as document_router
 from routes.community import router as community_router
-from routes.support import router as support_router
 from routes.feedback import router as feedback_router
 from routes.events import router as events_router
 from routes.interactions import router as interactions_router
+from routes.escalations import router as escalations_router
 
 app.include_router(tts_router)
 app.include_router(stt_router)
@@ -40,7 +42,7 @@ app.include_router(contributors_router)
 app.include_router(knowledge_router)
 app.include_router(document_router)
 app.include_router(community_router)
-app.include_router(support_router)
+app.include_router(escalations_router)
 app.include_router(feedback_router)
 app.include_router(events_router)
 app.include_router(interactions_router)

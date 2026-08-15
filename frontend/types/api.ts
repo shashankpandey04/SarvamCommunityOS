@@ -279,3 +279,69 @@ export interface AnalyticsKnowledge {
     rejected: number;
   };
 }
+
+export interface FeedbackVote {
+  user_id: string;
+  vote: "up" | "down";
+  created_at?: string;
+}
+
+export interface FeedbackSentiment {
+  overall:
+    | "positive"
+    | "neutral"
+    | "negative"
+    | "mixed"
+    | "unknown";
+
+  positive: number;
+  neutral: number;
+  negative: number;
+
+  summary: string | null;
+  key_points: string[];
+}
+
+export interface FeedbackMessage {
+  message_id: string;
+  user_id: string;
+  username: string;
+  content: string;
+  created_at: string;
+}
+
+export interface CommunityFeedback {
+  _id: string;
+
+  feedback_id?: string;
+
+  suggestion: string;
+
+  author_id: string;
+  author_name: string;
+
+  channel_id?: string;
+  message_id?: string;
+  thread_id?: string;
+
+  votes: FeedbackVote[];
+
+  upvotes: number;
+  downvotes: number;
+
+  discussion: {
+    message_count: number;
+    messages: FeedbackMessage[];
+
+    sentiment: FeedbackSentiment;
+  };
+
+  status: string;
+
+  source?: string;
+
+  created_at: string;
+  updated_at: string;
+
+  score: number;
+}

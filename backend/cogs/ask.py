@@ -1,84 +1,29 @@
-import asyncio
+from datetime import datetime, timezone
+
+import database
+
+from discord.ext import commands
+
+from knowledge import (
+    search_knowledge,
+    build_context,
+)
+
+from modules.impact_score import record_contribution
 
 from utils.pagination import (
     paginate_text,
     AnswerPaginator,
 )
-import database
-
-from datetime import datetime, timezone
-from discord.ext import commands
-
-from modules.impact_score import record_contribution
-
-import uvicorn
-
-from api import app
-from config import (
-    API_HOST,
-    API_PORT,
-    SARVAM_API_KEY,
-)
-from knowledge import (
-    search_knowledge,
-    build_context,
-)
-from sarvam_client import SarvamService
 
 
-class CommunityOS(commands.Cog):
+class AskCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
-
         self.bot = bot
 
-        # ---------------------------------------------
-        # Sarvam
-        # ---------------------------------------------
-
-        self.bot.sarvam = SarvamService(
-            SARVAM_API_KEY
-        )
-
-        # ---------------------------------------------
-        # FastAPI
-        # ---------------------------------------------
-
-        self.api_task = None
-
-    async def cog_load(self):
-
-        self.api_task = asyncio.create_task(
-            self.start_api()
-        )
-
-        print(
-            f"CommunityOS API starting on "
-            f"http://{API_HOST}:{API_PORT}"
-        )
-
-    async def cog_unload(self):
-
-        if self.api_task:
-            self.api_task.cancel()
-
-    async def start_api(self):
-
-        config = uvicorn.Config(
-            app,
-            host=API_HOST,
-            port=API_PORT,
-            log_level="info",
-        )
-
-        server = uvicorn.Server(config)
-
-        await server.serve()
-        
-
-
     # =================================================
-    # Discord Commands
+    # /ask
     # =================================================
 
     @commands.hybrid_command(
@@ -100,13 +45,8 @@ class CommunityOS(commands.Cog):
 
         now = datetime.now(timezone.utc)
 
-        user_id = str(
-            ctx.author.id
-        )
-
-        username = str(
-            ctx.author
-        )
+        user_id = str(ctx.author.id)
+        username = str(ctx.author)
 
         message_id = str(
             getattr(
@@ -166,9 +106,7 @@ class CommunityOS(commands.Cog):
 
         if results:
 
-            context = build_context(
-                results
-            )
+            context = build_context(results)
 
             answer = await self.bot.sarvam.answer_question(
                 question=question,
@@ -180,6 +118,7 @@ class CommunityOS(commands.Cog):
             # ---------------------------------------------
 
             if intent == "technical_question":
+
                 record_contribution(
                     discord_id=user_id,
                     contribution_type="technical_question",
@@ -190,7 +129,6 @@ class CommunityOS(commands.Cog):
             # ---------------------------------------------
 
             database.messages.insert_one({
-
                 "discord_message_id": message_id,
 
                 "user_id": user_id,
@@ -222,7 +160,6 @@ class CommunityOS(commands.Cog):
             # ---------------------------------------------
 
             database.interactions.insert_one({
-
                 "message_id": message_id,
 
                 "user_id": user_id,
@@ -240,9 +177,6 @@ class CommunityOS(commands.Cog):
                 "knowledge_found": True,
                 "sarvam_fallback": False,
 
-                # Correct:
-                # We analyzed the question and then
-                # answered using retrieved knowledge.
                 "sarvam_tools": [
                     "analyze_query",
                     "answer_question",
@@ -255,25 +189,10 @@ class CommunityOS(commands.Cog):
             # Respond
             # ---------------------------------------------
 
-            pages = paginate_text(answer)
-
-            if len(pages) == 1:
-
-                await ctx.send(
-                    pages[0]
-                )
-
-            else:
-
-                view = AnswerPaginator(
-                    pages=pages,
-                    user_id=ctx.author.id,
-                )
-
-                await ctx.send(
-                    pages[0],
-                    view=view,
-                )
+            await self._send_answer(
+                ctx,
+                answer,
+            )
 
             return
 
@@ -302,23 +221,41 @@ class CommunityOS(commands.Cog):
             temperature=0.2,
             max_tokens=1000,
         )
+
+        # =================================================
+        # 5. Build Fallback Response
+        # =================================================
+
+        escalation_warning = (
+            "\n\n---\n"
+            "⚠️ **This answer may be inaccurate.**\n"
+            "I couldn't find enough information in the "
+            "CommunityOS knowledge base to confidently "
+            "answer your question, so I've escalated it "
+            "to the team. Someone from the team will "
+            "respond with a confirmed answer soon."
+        )
+
+        full_answer = (
+            answer + escalation_warning
+        )
+
         # ---------------------------------------------
         # Contributor Impact
         # ---------------------------------------------
 
         if intent == "technical_question":
+
             record_contribution(
                 discord_id=user_id,
                 contribution_type="technical_question",
             )
 
-
         # =================================================
-        # 5. Save Knowledge Candidate
+        # 6. Save Knowledge Candidate
         # =================================================
 
         database.knowledge_candidates.insert_one({
-
             "question": question,
 
             "answer": answer,
@@ -343,11 +280,10 @@ class CommunityOS(commands.Cog):
         })
 
         # =================================================
-        # 6. Save Message
+        # 7. Save Message
         # =================================================
 
         database.messages.insert_one({
-
             "discord_message_id": message_id,
 
             "user_id": user_id,
@@ -363,8 +299,8 @@ class CommunityOS(commands.Cog):
             "topic": topic,
             "keywords": keywords,
 
-            "resolved": True,
-            "escalated": needs_human,
+            "resolved": False,
+            "escalated": True,
 
             "knowledge_found": False,
             "sarvam_fallback": True,
@@ -375,11 +311,10 @@ class CommunityOS(commands.Cog):
         })
 
         # =================================================
-        # 7. Save Interaction
+        # 8. Save Interaction
         # =================================================
 
         database.interactions.insert_one({
-
             "message_id": message_id,
 
             "user_id": user_id,
@@ -391,13 +326,12 @@ class CommunityOS(commands.Cog):
 
             "language": "en-IN",
 
-            "resolved": True,
-            "escalated": needs_human,
+            "resolved": False,
+            "escalated": True,
 
             "knowledge_found": False,
             "sarvam_fallback": True,
 
-            # Fallback path:
             "sarvam_tools": [
                 "analyze_query",
                 "chat",
@@ -407,73 +341,78 @@ class CommunityOS(commands.Cog):
         })
 
         # =================================================
-        # 8. Respond to User
+        # 9. Respond
         # =================================================
+
+        sent_message = await self._send_answer(
+            ctx,
+            full_answer,
+        )
+
+        # =================================================
+        # 10. Escalate
+        # =================================================
+
+        escalation_cog = self.bot.get_cog(
+            "EscalationCog"
+        )
+
+        if not escalation_cog:
+            print(
+                "[ESCALATION] EscalationCog is NOT loaded!"
+            )
+            return
+
+        print(
+            "[ESCALATION] Calling create_escalation..."
+        )
+
+        await escalation_cog.create_escalation(
+            ctx=ctx,
+            sent_message=sent_message,
+            question=question,
+            bot_answer=answer,
+            topic=topic,
+            user_id=user_id,
+            username=username,
+            now=now,
+        )
+
+    # =================================================
+    # Answer Pagination
+    # =================================================
+
+    async def _send_answer(
+        self,
+        ctx: commands.Context,
+        answer: str,
+    ):
 
         pages = paginate_text(answer)
 
         if len(pages) == 1:
 
-            await ctx.send(
+            return await ctx.send(
                 pages[0]
             )
 
-        else:
+        view = AnswerPaginator(
+            pages=pages,
+            user_id=ctx.author.id,
+        )
 
-            view = AnswerPaginator(
-                pages=pages,
-                user_id=ctx.author.id,
-            )
+        return await ctx.send(
+            pages[0],
+            view=view,
+        )
 
-            await ctx.send(
-                pages[0],
-                view=view,
-            )
 
-    # =================================================
+# =====================================================
+# Extension Setup
+# =====================================================
 
-    @commands.hybrid_command(
-        name="feedback",
-        description="Submit community feedback.",
+async def setup(bot: commands.Bot):
+
+    await bot.add_cog(
+        AskCog(bot)
     )
-    async def feedback(
-        self,
-        ctx: commands.Context,
-        *,
-        feedback: str,
-    ):
-
-        await ctx.defer()
-
-        classification = await self.bot.sarvam.chat(
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Classify the following developer "
-                        "community feedback into one of: "
-                        "documentation, feature_request, "
-                        "bug, positive, other. "
-                        "Return only the category."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": feedback,
-                },
-            ],
-            max_tokens=50,
-        )
-
-        database.feedback.insert_one({
-            "user_id": str(ctx.author.id),
-            "username": str(ctx.author),
-            "content": feedback,
-            "category": classification.strip(),
-            "source": "discord",
-            "created_at": datetime.now(timezone.utc),
-        })
-
-        await ctx.send(
-            "💡 Thanks! Your feedback has been recorded."
-        )

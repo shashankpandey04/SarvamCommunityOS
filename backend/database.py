@@ -127,11 +127,31 @@ feedback.create_index(
 )
 
 feedback.create_index(
+    [("updated_at", DESCENDING)]
+)
+
+feedback.create_index(
     [("topic", ASCENDING)]
 )
 
 feedback.create_index(
     [("status", ASCENDING)]
+)
+
+feedback.create_index(
+    [("message_id", ASCENDING)],
+    unique=True,
+    sparse=True,
+)
+
+feedback.create_index(
+    [("thread_id", ASCENDING)],
+    unique=True,
+    sparse=True,
+)
+
+feedback.create_index(
+    [("upvotes", DESCENDING), ("created_at", DESCENDING)]
 )
 
 
